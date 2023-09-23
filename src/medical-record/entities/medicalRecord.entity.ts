@@ -3,11 +3,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../../user/entities/user.entity';
 export enum status {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
@@ -16,7 +17,7 @@ export enum status {
 @Entity()
 export class MedicalRecord {
   @PrimaryGeneratedColumn()
-  medicalRecordId: number;
+  medical_recordId: number;
   @Column({ name: 'name', nullable: false })
   fileName: string;
   @Column({
@@ -40,6 +41,11 @@ export class MedicalRecord {
 
   @DeleteDateColumn()
   deletedDate: Date;
-  @OneToOne(() => User, (user) => user.medicalRecord)
-  user: User;
+
+  @JoinTable()
+  @OneToOne(() => User, (patient) => patient.medicalRecord)
+  patient: User;
+  @JoinTable()
+  @OneToOne(() => User, (userId) => userId.medicalRecord)
+  nurse: User;
 }

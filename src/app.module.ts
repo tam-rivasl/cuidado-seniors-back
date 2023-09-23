@@ -2,10 +2,92 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
+import { ObservationModule } from './observation/observation.module';
+import { PaymentHistoryModule } from './payment-history/payment-history.module';
+import { PlanServiceModule } from './plan-service/plan-service.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserController } from './user/user.controller';
+import { AppointmentController } from './appointment/appointment.controller';
+import { EmergencyContactController } from './emergency-contact/emergency-contact.controller';
+import { MedicalRecordController } from './medical-record/medical-record.controller';
+import { ObservationController } from './observation/observation.controller';
+import { PaymentHistoryController } from './payment-history/payment-history.controller';
+import { PlanServiceController } from './plan-service/plan-service.controller';
+import { UserService } from './user/user.service';
+import { AppointmentService } from './appointment/appointment.service';
+import { EmergencyContactService } from './emergency-contact/emergency-contact.service';
+import { MedicalRecordService } from './medical-record/medical-record.service';
+import { ObservationService } from './observation/observation.service';
+import { PaymentHistoryService } from './payment-history/payment-history.service';
+import { PlanServiceService } from './plan-service/plan-service.service';
+import { PaymentModule } from './payment/payment.module';
+import { Payment } from './payment/entities/payment.entity';
+import { EmergencyContact } from './emergency-contact/entities/nested/emergency_contact.entity';
+import { PatientEmergencyContact } from './emergency-contact/entities/patient_emergency_contact.entity';
+import { User } from './user/entities/user.entity';
+import { Appointment } from './appointment/entities/appointment.entity';
+import { MedicalRecord } from './medical-record/entities/medicalRecord.entity';
+import { Observation } from './observation/entities/observation.entity';
+import { Rol } from './user/entities/rol.entity';
+import { PaymentHistory } from './payment-history/entities/paymentHistory.entity';
+import { EmergencyContactModule } from './emergency-contact/emergency-contact.module';
+import { MedicalRecordModule } from './medical-record/medical-record.module';
+import { PaymentController } from './payment/payment.controller';
+import { PaymentService } from './payment/payment.service';
 
 @Module({
-  imports: [UserModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    UserModule,
+    ObservationModule,
+    PaymentHistoryModule,
+    PlanServiceModule,
+    PaymentModule,
+    Appointment,
+    EmergencyContactModule,
+    MedicalRecordModule,
+    TypeOrmModule.forFeature([
+      EmergencyContact,
+      PatientEmergencyContact,
+      User,
+      Appointment,
+      PatientEmergencyContact,
+      MedicalRecord,
+      Observation,
+      Rol,
+      PaymentHistory,
+    ]),
+    TypeOrmModule.forRoot({
+      type: 'postgres', // type of our database
+      host: 'localhost', // database host
+      port: 5433, // database host
+      username: 'admin', // username
+      password: 'admin', // user password
+      database: 'cuidado-seniors', // name of our database
+      autoLoadEntities: true, // models will be loaded automatically (you don't have to explicitly specify the entities: [] array)
+      synchronize: true, // your entities will be synced with the database (ORM will map entity definitions to corresponding SQL tabled), every time you run the application (recommended: disable in the production)
+    }),
+  ],
+  controllers: [
+    AppController,
+    UserController,
+    AppointmentController,
+    EmergencyContactController,
+    MedicalRecordController,
+    ObservationController,
+    PaymentController,
+    PaymentHistoryController,
+    PlanServiceController,
+  ],
+  providers: [
+    AppService,
+    UserService,
+    AppointmentService,
+    EmergencyContactService,
+    MedicalRecordService,
+    ObservationService,
+    PaymentHistoryService,
+    PaymentService,
+    PlanServiceService,
+  ],
 })
 export class AppModule {}

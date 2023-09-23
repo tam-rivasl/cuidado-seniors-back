@@ -3,30 +3,29 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  OneToMany,
+  JoinTable,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Appointment } from './appointment.entity';
+import { User } from '../../user/entities/user.entity';
 export enum status {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
 }
+export enum observationType {
+  SHEDULE_RUTINE = 'schedule_rutine',
+  RECOMENDATIONS = 'recomendations',
+  MEDICAL = 'medical',
+}
 @Entity()
-export class PlanService {
+export class Observation {
   @PrimaryGeneratedColumn()
-  planServiceId: number;
-  @Column({ name: 'planServiceName', nullable: false })
-  planServiceName: string;
-  @Column({ name: 'price', nullable: false })
-  price: number;
+  observationId: number;
+  @Column({ name: 'title', nullable: false })
+  title: string;
   @Column({ name: 'description', nullable: false })
   description: string;
-  @Column({ name: 'startTime', type: 'timestamptz', nullable: false })
-  startTime: Date;
-  @Column({ name: 'endTime', type: 'timestamptz', nullable: false })
-  endTime: Date;
-
   @Column({
     name: 'status',
     nullable: false,
@@ -34,6 +33,14 @@ export class PlanService {
     enum: status,
   })
   status: string;
+  @Column({
+    name: 'observationType',
+    nullable: false,
+    type: 'enum',
+    enum: observationType,
+  })
+  observtionType: string;
+
   @CreateDateColumn()
   createdDate: Date;
 
@@ -43,6 +50,7 @@ export class PlanService {
   @DeleteDateColumn()
   deletedDate: Date;
 
-  @OneToMany(() => Appointment, (appointment) => appointment.planService)
-  appointment: Appointment;
+  @JoinTable()
+  @ManyToOne(() => User, (user) => user.observation)
+  user: User;
 }

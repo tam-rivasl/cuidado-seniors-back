@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -10,10 +11,11 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { Appointment } from './appointment.entity';
+import { Appointment } from '../../appointment/entities/appointment.entity';
 import { Rol } from './rol.entity';
-import { Observation } from './observation.entity';
-import { MedicalRecord } from './medicalRecord.entity';
+import { Observation } from '../../observation/entities/observation.entity';
+import { MedicalRecord } from '../../medical-record/entities/medicalRecord.entity';
+import { PatientEmergencyContact } from 'src/emergency-contact/entities/patient_emergency_contact.entity';
 export enum userGender {
   MALE = 'male',
   FEMALE = 'female',
@@ -40,7 +42,8 @@ export class User {
   birthDate: Date;
   @Column({ name: 'age', nullable: false })
   age: number;
-
+  @Column({ name: 'identificationNumber', nullable: true })
+  identificationNumber: string;
   @Column({ name: 'password', nullable: false })
   password: string;
   @Column({
@@ -66,15 +69,32 @@ export class User {
   })
   status: string;
 
-  @OneToMany(() => Appointment, (appointment) => appointment.user)
-  appointment: Appointment;
+  //REVISAR JOIN DE USER Y ROL
+  @JoinTable()
+  @ManyToOne(() => Rol, (rolUserId) => rolUserId.rolId)
+  rolUserId: Rol;
 
-  @ManyToOne(() => Rol, (rol) => rol.user)
-  rol: Rol;
+  @ManyToOne(() => Appointment, (appointment) => appointment.userId)
+  userId_appointment: Appointment;
+
+  @ManyToOne(() => Appointment, (appointment) => appointment.nurseId)
+  nurseId_appointment: Appointment;
+
   @OneToMany(() => Observation, (observation) => observation.user)
   observation: Observation;
-  @OneToOne(() => MedicalRecord, (medicalRecord) => medicalRecord.user, {
+
+  @OneToOne(() => MedicalRecord, (medicalRecord) => medicalRecord.patient)
+  medicalRecord: MedicalRecord;
+
+  @OneToOne(() => MedicalRecord, (medicalRecord) => medicalRecord.nurse, {
     nullable: true,
   })
-  medicalRecord: MedicalRecord;
+  nurseId_medicalRecord: MedicalRecord;
+
+  @OneToMany(
+    () => PatientEmergencyContact,
+    (emergency_contact) => emergency_contact.patient,
+    { nullable: true },
+  )
+  emergency_contact: PatientEmergencyContact;
 }

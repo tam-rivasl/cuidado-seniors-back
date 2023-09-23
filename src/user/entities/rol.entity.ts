@@ -12,6 +12,11 @@ export enum status {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
 }
+export enum rolType {
+  NURSE = 'nurse',
+  user = 'user',
+  SECRETARY = 'secretary',
+}
 @Entity()
 export class Rol {
   @PrimaryGeneratedColumn()
@@ -24,7 +29,12 @@ export class Rol {
     enum: status,
   })
   status: string;
-  @Column({ name: 'name', nullable: false })
+  @Column({
+    name: 'rolName',
+    nullable: false,
+    type: 'enum',
+    enum: rolType,
+  })
   rolName: string;
   @CreateDateColumn()
   createdDate: Date;
@@ -35,6 +45,7 @@ export class Rol {
   @DeleteDateColumn()
   deletedDate: Date;
 
-  @OneToMany(() => User, (user) => user.rol)
-  user: User;
+  //REVISAR JOIN DE USER Y ROL 
+  @OneToMany(() => User, (rolUserId) => rolUserId.rolUserId)
+  rolUserId: User;
 }
