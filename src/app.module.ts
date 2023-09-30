@@ -57,11 +57,11 @@ import { Payment } from './payment/entities/payment.entity';
     ]),
     TypeOrmModule.forRoot({
       type: 'postgres', // type of our database
-      host: 'localhost', // database host
-      port: 5433, // database host
-      username: 'admin', // username
-      password: 'admin', // user password
-      database: 'cuidado_seniors', // name of our database
+      host: process.env.HOST, // database host
+      port: +process.env.PORT, // database host
+      username: process.env.USERNAME, // username
+      password: process.env.PASSWORD, // user password
+      database: process.env.DATABASE, // name of our database
       autoLoadEntities: true, // models will be loaded automatically (you don't have to explicitly specify the entities: [] array)
       synchronize: true, // your entities will be synced with the database (ORM will map entity definitions to corresponding SQL tabled), every time you run the application (recommended: disable in the production)
     }),
