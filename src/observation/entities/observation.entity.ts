@@ -3,7 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -50,7 +50,10 @@ export class Observation {
   @DeleteDateColumn()
   deletedDate: Date;
 
-  @JoinTable()
-  @ManyToOne(() => User, (user) => user.observation)
-  user: User;
+  @ManyToOne(() => User, (patient) => patient.patient_observation)
+  @JoinColumn({ name: 'patientId' })
+  patient: User;
+  @ManyToOne(() => User, (nurse) => nurse.nurse_observation)
+  @JoinColumn({ name: 'nurseId' })
+  nurse: User;
 }

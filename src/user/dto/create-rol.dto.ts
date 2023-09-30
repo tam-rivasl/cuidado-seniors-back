@@ -1,34 +1,30 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
 import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
+
 export enum status {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
 }
-export class CreateMedicalRecordDto {
+export enum rolType {
+  NURSE = 'nurse',
+  user = 'user',
+  SECRETARY = 'secretary',
+}
+export class CreateRolDto {
   @IsNumber()
   @IsNotEmpty()
-  medical_recordId: number;
+  rolId: number;
 
-  @IsNumber()
+  @Type(() => String)
+  @IsEnum(rolType, { message: 'rol type is required' })
   @IsNotEmpty()
-  patientId: number;
-
-  @IsString()
-  @IsNotEmpty()
-  fileName: string;
+  rolName: string;
 
   @Type(() => String)
   @IsEnum(status)
   @IsNotEmpty({ message: 'Status is required' })
   status: string;
-
-  @IsNotEmpty()
-  file: Buffer;
-
-  @IsString()
-  @IsNotEmpty()
-  mimetype: string;
 
   @CreateDateColumn()
   createdDate: Date;

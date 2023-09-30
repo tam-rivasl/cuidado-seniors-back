@@ -16,8 +16,10 @@ export enum status {
 export class EmergencyContact {
   @PrimaryGeneratedColumn()
   emergency_contactId: number;
-  @Column({ name: 'contactName', nullable: false })
-  contactName: string;
+  @Column({ name: 'firstName', nullable: false })
+  firstName: string;
+  @Column({ name: 'lastName', nullable: false })
+  lastName: string;
   @Column({ name: 'email', nullable: false })
   email: string;
   @Column({ name: 'phoneNumber', nullable: false })

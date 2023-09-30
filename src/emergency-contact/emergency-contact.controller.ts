@@ -1,34 +1,64 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { EmergencyContactService } from './emergency-contact.service';
 import { CreateEmergencyContactDto } from './dto/create-emergency-contact.dto';
 import { UpdateEmergencyContactDto } from './dto/update-emergency-contact.dto';
 
 @Controller('emergency-contact')
 export class EmergencyContactController {
-  constructor(private readonly emergencyContactService: EmergencyContactService) {}
+  constructor(
+    private readonly emergencyContactService: EmergencyContactService,
+  ) {}
 
-  @Post()
-  create(@Body() createEmergencyContactDto: CreateEmergencyContactDto) {
-    return this.emergencyContactService.create(createEmergencyContactDto);
+  @Post(':pacientId/create')
+  create(
+    @Param('pacientId', ParseIntPipe) patientId: number,
+    @Body() createEmergencyContactDto: CreateEmergencyContactDto,
+  ) {
+    return this.emergencyContactService.createEmergencyContact(
+      patientId,
+      createEmergencyContactDto,
+    );
   }
 
-  @Get()
-  findAll() {
-    return this.emergencyContactService.findAll();
+  @Get(':patientId')
+  findAll(@Param('patientId', ParseIntPipe) patientId: number) {
+    return this.emergencyContactService.findAllByPatientId(patientId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.emergencyContactService.findOne(+id);
+  @Get(':patient_emergency_contactId')
+  findOne(
+    @Param('patient_emergency_contactId', ParseIntPipe)
+    patient_emergency_contactId: number,
+  ) {
+    return this.emergencyContactService.findOne(patient_emergency_contactId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEmergencyContactDto: UpdateEmergencyContactDto) {
-    return this.emergencyContactService.update(+id, updateEmergencyContactDto);
+  @Patch(':patient_emergency_contactId/update')
+  update(
+    @Param('patient_emergency_contactId', ParseIntPipe)
+    patient_emergency_contactId: number,
+    @Body() updateEmergencyContactDto: UpdateEmergencyContactDto,
+  ) {
+    return this.emergencyContactService.update(
+      patient_emergency_contactId,
+      updateEmergencyContactDto,
+    );
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.emergencyContactService.remove(+id);
+  @Delete(':patient_emergency_contactId/delete')
+  remove(
+    @Param('patient_emergency_contactId', ParseIntPipe)
+    patient_emergency_contactId: number,
+  ) {
+    return this.emergencyContactService.remove(patient_emergency_contactId);
   }
 }

@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { ObservationModule } from './observation/observation.module';
 import { PaymentHistoryModule } from './payment-history/payment-history.module';
@@ -21,7 +19,6 @@ import { ObservationService } from './observation/observation.service';
 import { PaymentHistoryService } from './payment-history/payment-history.service';
 import { PlanServiceService } from './plan-service/plan-service.service';
 import { PaymentModule } from './payment/payment.module';
-import { Payment } from './payment/entities/payment.entity';
 import { EmergencyContact } from './emergency-contact/entities/nested/emergency_contact.entity';
 import { PatientEmergencyContact } from './emergency-contact/entities/patient_emergency_contact.entity';
 import { User } from './user/entities/user.entity';
@@ -34,6 +31,7 @@ import { EmergencyContactModule } from './emergency-contact/emergency-contact.mo
 import { MedicalRecordModule } from './medical-record/medical-record.module';
 import { PaymentController } from './payment/payment.controller';
 import { PaymentService } from './payment/payment.service';
+import { Payment } from './payment/entities/payment.entity';
 
 @Module({
   imports: [
@@ -55,6 +53,7 @@ import { PaymentService } from './payment/payment.service';
       Observation,
       Rol,
       PaymentHistory,
+      Payment,
     ]),
     TypeOrmModule.forRoot({
       type: 'postgres', // type of our database
@@ -62,13 +61,12 @@ import { PaymentService } from './payment/payment.service';
       port: 5433, // database host
       username: 'admin', // username
       password: 'admin', // user password
-      database: 'cuidado-seniors', // name of our database
+      database: 'cuidado_seniors', // name of our database
       autoLoadEntities: true, // models will be loaded automatically (you don't have to explicitly specify the entities: [] array)
       synchronize: true, // your entities will be synced with the database (ORM will map entity definitions to corresponding SQL tabled), every time you run the application (recommended: disable in the production)
     }),
   ],
   controllers: [
-    AppController,
     UserController,
     AppointmentController,
     EmergencyContactController,
@@ -79,7 +77,6 @@ import { PaymentService } from './payment/payment.service';
     PlanServiceController,
   ],
   providers: [
-    AppService,
     UserService,
     AppointmentService,
     EmergencyContactService,

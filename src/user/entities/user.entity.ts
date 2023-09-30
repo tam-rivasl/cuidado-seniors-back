@@ -3,7 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -70,30 +70,30 @@ export class User {
   status: string;
 
   //REVISAR JOIN DE USER Y ROL
-  @JoinTable()
-  @ManyToOne(() => Rol, (rolUserId) => rolUserId.rolId)
-  rolUserId: Rol;
+  @ManyToOne(() => Rol, (rol) => rol.user)
+  @JoinColumn({ name: 'rolId' })
+  rol: Rol;
 
-  @ManyToOne(() => Appointment, (appointment) => appointment.userId)
-  userId_appointment: Appointment;
+  @OneToMany(() => Appointment, (appointment) => appointment.patient)
+  patient_appointment: Appointment;
 
-  @ManyToOne(() => Appointment, (appointment) => appointment.nurseId)
-  nurseId_appointment: Appointment;
+  @OneToMany(() => Appointment, (appointment) => appointment.nurse)
+  nurse_appointment: Appointment;
 
-  @OneToMany(() => Observation, (observation) => observation.user)
-  observation: Observation;
+  @OneToMany(() => Observation, (observation) => observation.patient)
+  patient_observation: Observation;
 
-  @OneToOne(() => MedicalRecord, (medicalRecord) => medicalRecord.patient)
-  medicalRecord: MedicalRecord;
+  @OneToMany(() => Observation, (observation) => observation.nurse)
+  nurse_observation: Observation;
 
-  @OneToOne(() => MedicalRecord, (medicalRecord) => medicalRecord.nurse, {
+  @OneToOne(() => MedicalRecord, (medicalRecord) => medicalRecord.patient, {
     nullable: true,
   })
-  nurseId_medicalRecord: MedicalRecord;
+  patient_medicalRecord: MedicalRecord;
 
   @OneToMany(
     () => PatientEmergencyContact,
-    (emergency_contact) => emergency_contact.patient,
+    (emergency_contact) => emergency_contact.patientId,
     { nullable: true },
   )
   emergency_contact: PatientEmergencyContact;

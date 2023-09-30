@@ -3,7 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -41,21 +41,21 @@ export class Appointment {
   @DeleteDateColumn()
   deletedDate: Date;
 
-  @JoinTable()
-  @OneToMany(() => User, (userId) => userId.userId_appointment)
-  userId: User;
-
-  @JoinTable()
-  @OneToMany(() => User, (nurseId) => nurseId.nurseId_appointment, {
+  @ManyToOne(() => User, (patient) => patient.patient_appointment, {
     nullable: true,
   })
-  nurseId: User;
+  @JoinColumn({ name: 'patientId' })
+  patient: User;
 
-  @JoinTable()
+  @ManyToOne(() => User, (nurse) => nurse.nurse_appointment)
+  @JoinColumn({ name: 'nurseId' })
+  nurse: User;
+
   @ManyToOne(() => PlanService, (plan_service) => plan_service.appointment)
+  @JoinColumn({ name: 'plan_serviceId' })
   plan_service: PlanService;
 
-  @ManyToOne(
+  @OneToMany(
     () => PaymentHistory,
     (payment_history) => payment_history.appointment,
   )

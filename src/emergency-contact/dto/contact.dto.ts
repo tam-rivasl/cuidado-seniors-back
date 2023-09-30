@@ -4,13 +4,10 @@ export enum status {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
 }
-export class CreateEmergencyContactDto {
+export class CreateContactDto {
   @IsNumber()
   @IsNotEmpty()
   emergency_contactId: number;
-  @IsNumber()
-  @IsNotEmpty()
-  patient_emergency_contactId: number;
 
   @IsNumber()
   @IsNotEmpty()

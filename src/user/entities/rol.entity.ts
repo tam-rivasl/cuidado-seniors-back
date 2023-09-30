@@ -45,7 +45,7 @@ export class Rol {
   @DeleteDateColumn()
   deletedDate: Date;
 
-  //REVISAR JOIN DE USER Y ROL 
-  @OneToMany(() => User, (rolUserId) => rolUserId.rolUserId)
-  rolUserId: User;
+  //REVISAR JOIN DE USER Y ROL
+  @OneToMany(() => User, (user) => user.rol)
+  user: User;
 }

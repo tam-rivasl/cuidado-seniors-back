@@ -2,8 +2,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
-  OneToMany,
+  JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -22,13 +22,14 @@ export class PaymentHistory {
 
   @DeleteDateColumn()
   deletedDate: Date;
-  @JoinTable()
-  @OneToMany(() => Appointment, (appointment) => appointment.payment_history, {
+  @ManyToOne(() => Appointment, (appointment) => appointment.payment_history, {
     nullable: true,
   })
+  @JoinColumn({
+    name: 'payment_historyId',
+  })
   appointment: Appointment;
-
-  @JoinTable()
   @OneToOne(() => Payment, (history) => history.payment)
+  @JoinColumn({ name: 'paymentId' })
   history: Payment;
 }

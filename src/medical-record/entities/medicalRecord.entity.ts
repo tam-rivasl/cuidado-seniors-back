@@ -3,7 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -42,10 +42,7 @@ export class MedicalRecord {
   @DeleteDateColumn()
   deletedDate: Date;
 
-  @JoinTable()
-  @OneToOne(() => User, (patient) => patient.medicalRecord)
+  @OneToOne(() => User, (patient) => patient.patient_medicalRecord)
+  @JoinColumn({ name: 'patientId' })
   patient: User;
-  @JoinTable()
-  @OneToOne(() => User, (userId) => userId.medicalRecord)
-  nurse: User;
 }

@@ -2,7 +2,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -22,14 +22,14 @@ export class PatientEmergencyContact extends EmergencyContact {
   @DeleteDateColumn()
   deletedDate: Date;
 
-  @JoinTable()
   @ManyToOne(
     () => EmergencyContact,
     (emergency_contact) => emergency_contact.user,
   )
+  @JoinColumn({ name: 'emergency_contactId' })
   emergency_contact: EmergencyContact;
 
-  @JoinTable()
   @ManyToOne(() => User, (patient) => patient.emergency_contact)
-  patient: User;
+  @JoinColumn({ name: 'patientId' })
+  patientId: User;
 }
