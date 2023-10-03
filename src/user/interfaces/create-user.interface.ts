@@ -1,6 +1,5 @@
 export interface ICreateUser {
   userId: number;
-  rolId: number;
   firstName: string;
   lastName: string;
   email: string;
@@ -10,5 +9,4 @@ export interface ICreateUser {
   identificationNumber: string;
   password: string;
   gender: string;
-  status: string;
 }

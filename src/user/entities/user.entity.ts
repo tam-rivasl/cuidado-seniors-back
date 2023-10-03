@@ -63,7 +63,7 @@ export class User {
   deletedDate: Date;
   @Column({
     name: 'status',
-    nullable: false,
+    nullable: true,
     type: 'enum',
     enum: userStatus,
   })

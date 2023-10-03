@@ -105,7 +105,7 @@ export class UserService {
       console.log('save');
       const result: ICreateUser = {
         userId: save.userId,
-        rolId: createUserDto.rolId,
+        //rolId: 1,
         firstName: createUserDto.firstName,
         lastName: createUserDto.lastName,
         email: createUserDto.email,
@@ -115,7 +115,7 @@ export class UserService {
         identificationNumber: save.identificationNumber,
         password: createUserDto.password,
         gender: createUserDto.gender,
-        status: createUserDto.status,
+        //status: 'active',
       };
       console.log('result', result);
       return result;
