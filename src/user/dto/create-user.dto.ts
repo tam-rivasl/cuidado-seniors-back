@@ -1,17 +1,20 @@
+import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
   IsString,
   IsDate,
+  IsEnum,
 } from 'class-validator';
 import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 
 export class CreateUserDto {
-  @IsNumber()
-  @IsNotEmpty()
-  rolId: number;
 
+
+  @IsNotEmpty()
+  rolName: CreateUserDto;
+  
   @IsString()
   @IsNotEmpty()
   firstName: string;

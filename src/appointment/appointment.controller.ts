@@ -1,15 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { ParseIntPipe } from '@nestjs/common';
 
 @Controller('appointment')
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
-  @Post()
-  create(@Body() createAppointmentDto: CreateAppointmentDto) {
-    return this.appointmentService.create(createAppointmentDto);
+  @Post('create')
+  async createAppointment(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('nurseId', ParseIntPipe) nurseId: number,
+    @Param('plan_serviceId', ParseIntPipe) plan_serviceId: number,
+    @Body() createAppointmentDto: CreateAppointmentDto,
+  ) {
+    return this.appointmentService.createAppointment(
+      createAppointmentDto,
+      userId,
+      nurseId,
+      plan_serviceId,
+    );
   }
 
   @Get()
@@ -23,7 +42,10 @@ export class AppointmentController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAppointmentDto: UpdateAppointmentDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateAppointmentDto: UpdateAppointmentDto,
+  ) {
     return this.appointmentService.update(+id, updateAppointmentDto);
   }
 

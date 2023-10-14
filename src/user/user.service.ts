@@ -14,20 +14,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { ICreateUser } from './interfaces/create-user.interface';
 import { PaginationQueryDto } from 'src/common/paginationQueryDto';
+import { Rol, rolType, status } from './entities/rol.entity';
+import { CreateRolDto } from './dto/create-rol.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Rol)
+    private rolRepository: Repository<Rol>,
   ) {}
   //Funcion que valida si el email ya existe.
   private async validateEmail(email: string) {
-    console.log('email?', email);
     const result = await this.userRepository.findOne({
       where: { email: email },
     });
-    console.log('result', result);
     if (result) {
       throw new BadRequestException(`User email exists ${email}`);
     }
@@ -51,7 +53,6 @@ export class UserService {
     const result = await this.userRepository.findOne({
       where: { identificationNumber: identificationNumber },
     });
-    console.log(result);
     if (result) {
       throw new HttpException(
         `User identificationNumber exists ${identificationNumber}`,
@@ -61,30 +62,59 @@ export class UserService {
       return this.sanitizeUser(result);
     }
   }
-  //buscar que ondi el rolId
+
+  async createRol(rolName: any): Promise<Rol> {
+
+    console.log('ola2');
+    if (rolName === 'nurse') {
+      rolName = rolType.NURSE;
+      console.log('rolname', rolName);
+    } else if (rolName === 'secretary') {
+      rolName = rolType.SECRETARY;
+      console.log('rolname',rolName);
+    } else {
+      rolName = rolType.user;
+    }
+    // Busca el rol en la base de datos o crea uno si no existe
+    const rol = await this.rolRepository.findOne({
+      where: { rolName:rolName },
+    });
+    if (!rol) {
+      // El rol no existe, así que lo creamos
+      const newRol: CreateRolDto = await this.rolRepository.create({
+        rolName: rolName,
+        status: status.ACTIVE,
+      });
+      console.log('new rol:', newRol);
+      try {
+        const save = await this.rolRepository.save(newRol);
+        console.log('result rol:', save);
+        return save;
+      } catch (e) {
+        throw new ConflictException(e.message, 'Error to create rol');
+      }
+    }else{
+    const preload = await this.rolRepository.preload(rol)
+    return preload;
+    }
+  }
   public async userCreate(createUserDto: CreateUserDto): Promise<ICreateUser> {
     if (createUserDto.identificationNumber) {
-      console.log('first glag');
       try {
-        console.log('first flag');
         // regex clean .
         const identificationNumber = createUserDto.identificationNumber.replace(
           /\./g,
           '',
         );
         await this.validateDocumentNumber(identificationNumber);
-        console.log('second flag');
       } catch (e) {
         throw new BadRequestException('identificationNumber already exists');
       }
     }
-    console.log('first glag');
     if (createUserDto.email) {
-      console.log('email', createUserDto.email);
       await this.validateEmail(createUserDto.email.toLocaleLowerCase());
     }
     const pass = await this.encodePassword(createUserDto.password);
-    console.log('flag', pass);
     const user = this.userRepository.create({
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
@@ -97,15 +127,14 @@ export class UserService {
       gender: createUserDto.gender,
       status: createUserDto.status,
     });
-    console.log('3 flag');
-    console.log('create user', user);
+    const rol = await this.createRol(createUserDto.rolName);
+    user.rol = rol;
+    console.log('rol',rol)
     try {
-      console.log('se cae en el save?');
       const save = await this.userRepository.save(user);
-      console.log('save');
+      console.log('save', save);
       const result: ICreateUser = {
         userId: save.userId,
-        //rolId: 1,
         firstName: createUserDto.firstName,
         lastName: createUserDto.lastName,
         email: createUserDto.email,
@@ -115,9 +144,8 @@ export class UserService {
         identificationNumber: save.identificationNumber,
         password: createUserDto.password,
         gender: createUserDto.gender,
-        //status: 'active',
+        status: createUserDto.status,
       };
-      console.log('result', result);
       return result;
     } catch (e) {
       throw new ConflictException(e.message, 'Error to create user');
@@ -154,7 +182,6 @@ export class UserService {
     const findUser = await this.userRepository.findOne({
       where: { userId: userId },
     });
-    console.log('usuario', findUser);
     if (!findUser) {
       throw new NotFoundException(`Not found user: ${userId}`);
     }
