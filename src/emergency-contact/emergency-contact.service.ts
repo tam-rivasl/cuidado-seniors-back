@@ -1,10 +1,12 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateEmergencyContactDto } from './dto/create-emergency-contact.dto';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateEmergencyContactDto } from './dto/update-emergency-contact.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PatientEmergencyContact } from './entities/patient_emergency_contact.entity';
 import { Repository } from 'typeorm';
 import { EmergencyContact } from './entities/nested/emergency_contact.entity';
+import { CreateContactDto } from './dto/contact.dto';
+import { PatientContactDto } from './dto/patientContact.dto';
+import { User } from 'src/user/entities/user.entity';
 @Injectable()
 export class EmergencyContactService {
   /*private logger = new Logger(
@@ -12,78 +14,70 @@ export class EmergencyContactService {
   );*/
   constructor(
     @InjectRepository(PatientEmergencyContact)
-    private readonly patientEmergencyContact: Repository<PatientEmergencyContact>,
+    private readonly patientEmergencyContactRepository: Repository<PatientEmergencyContact>,
     @InjectRepository(EmergencyContact)
-    private readonly emergencyContact: Repository<EmergencyContact>,
-  ) {}
+    private readonly emergencyContactRepository: Repository<EmergencyContact>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    ) {}
 
-  async createEmergencyContact(
-    patientId: number,
-    createEmergencyContactDto: CreateEmergencyContactDto,
-  ) {
-    try {
-      if (patientId) {
-        console.log('first flag:');
-        const emergency_contact: CreateEmergencyContactDto = {
-          patient_emergency_contactId:
-            createEmergencyContactDto.patient_emergency_contactId,
-          emergency_contactId: createEmergencyContactDto.emergency_contactId,
-          patientId: createEmergencyContactDto.patientId,
-          firstName: createEmergencyContactDto.firstName,
-          lastName: createEmergencyContactDto.lastName,
-          email: createEmergencyContactDto.email,
-          phoneNumber: createEmergencyContactDto.phoneNumber,
-          relationship: createEmergencyContactDto.relationship,
-          status: createEmergencyContactDto.status,
-        };
-        console.log('email:', emergency_contact.email);
-        const contact = this.patientEmergencyContact.create({
-          emergency_contact,
-        });
-        console.log('contact', contact);
-        //const result = await this.patientEmergencyContact.save(contact);
-        //console.log('result:', result);
-        return contact;
-      } else {
-        const message = 'PacientId not found';
-        /* this.logger.error({
-          contextMap: {
-            message: 'DB error: ' + JSON.stringify(message),
-            method: 'createEmergencyContact',
-            status: HttpStatus.NOT_FOUND + 404,
-            data: {
-              patientId,
-              createEmergencyContactDto,
-            },
-          },
-        });*/
-        throw new HttpException(message, HttpStatus.NOT_FOUND);
+  public async createEmergencyContact(
+    userId: number,
+    createContactDto: CreateContactDto,
+   ) {
+    const user = await this.userRepository.find({
+      where: {userId: userId}
+    }); 
+    let result;
+    if (user) {
+      console.log('first flag:');
+      const emergencyContact: CreateContactDto = {
+        firstName: createContactDto.firstName,
+        lastName: createContactDto.lastName,
+        email: createContactDto.email,
+        phoneNumber: createContactDto.phoneNumber,
+        relationship: createContactDto.relationship,
+        status: createContactDto.status,
+      };
+      console.log('contacto emergency:', emergencyContact);
+      const create = await this.emergencyContactRepository.create(emergencyContact);
+      console.log('contact', create);
+      result = await this.emergencyContactRepository.save(emergencyContact);
+      console.log('result:', result);
+    return result;
+    }
+      const findContact = await this.emergencyContactRepository.find({
+        where: {emergency_contactId: result.emergency_contactId}
+      })
+
+      if(findContact){
+        const patientContact = {
+          patientId: userId,
+          contact: {
+            firstName: createContactDto.firstName,
+            lastName: createContactDto.lastName,
+            email: createContactDto.email,
+            phoneNumber: createContactDto.phoneNumber,
+            relationShip: createContactDto.relationship,
+            status: createContactDto.status,
+          }
+        } 
+      }else{
+        throw new NotFoundException('Emergency contact ')
       }
-    } catch (e) {
-      console.log('error:', e.message);
-      const message = 'Error to create emergency contact';
-      /*this.logger.error({
-        contextMap: {
-          message: 'DB error: ' + JSON.stringify(e.message),
-          method: 'createEmergencyContact',
-          status: HttpStatus.BAD_REQUEST + 400,
-          data: {
-            patientId,
-            createEmergencyContactDto,
-          },
-        },
-      });*/
-      throw new HttpException(message, HttpStatus.BAD_REQUEST);
+      return result;
+    } else {
+      const message = 'PacientId not found';
+      throw new HttpException(message, HttpStatus.NOT_FOUND);
     }
   }
-
   async findAllByPatientId(
     patientId: number,
   ): Promise<[PatientEmergencyContact[], number]> {
     try {
       if (patientId) {
         const [contacts, count] =
-          await this.patientEmergencyContact.findAndCount({
+          await this.patientEmergencyContactRepository.findAndCount({
             where: {
               patientId: { userId: patientId },
             },

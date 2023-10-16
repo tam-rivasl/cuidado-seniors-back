@@ -5,8 +5,10 @@ import {
   IsNumber,
   IsString,
   IsDate,
-  IsEnum,
+  IsOptional,
 } from 'class-validator';
+import { CreateContactDto } from 'src/emergency-contact/dto/contact.dto';
+import { CreateMedicalRecordDto } from 'src/medical-record/dto/create-medical-record.dto';
 import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 
 export class CreateUserDto {
@@ -14,7 +16,12 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   rolName: CreateUserDto;
-  
+
+  @IsOptional()
+  medicalRecord: CreateMedicalRecordDto;
+
+  @IsOptional()
+  emergencyContact: CreateContactDto;
   @IsString()
   @IsNotEmpty()
   firstName: string;

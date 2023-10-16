@@ -20,6 +20,8 @@ export class AppointmentService {
     @InjectRepository(Appointment)
     private readonly userRepository: Repository<User>,
   ) {}
+
+  //crear planes de servicio y login primero antes de terminar esto.
   public async createAppointment(
     createAppointmentDto: CreateAppointmentDto,
     nurseId: number,
@@ -63,6 +65,7 @@ export class AppointmentService {
           patient: user,
           nurse: nurse,
           plan_service: plan_serviceId,
+
         });
         return await this.appointmentRepository.save(appointment);
       }

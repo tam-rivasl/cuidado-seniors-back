@@ -5,13 +5,6 @@ export enum status {
   INACTIVE = 'inactive',
 }
 export class CreateContactDto {
-  @IsNumber()
-  @IsNotEmpty()
-  emergency_contactId: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  patientId: number;
 
   @IsString()
   @IsNotEmpty()

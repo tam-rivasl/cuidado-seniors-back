@@ -16,6 +16,7 @@ import { ICreateUser } from './interfaces/create-user.interface';
 import { PaginationQueryDto } from 'src/common/paginationQueryDto';
 import { Rol, rolType, status } from './entities/rol.entity';
 import { CreateRolDto } from './dto/create-rol.dto';
+import { EmergencyContact } from 'src/emergency-contact/entities/nested/emergency_contact.entity';
 
 @Injectable()
 export class UserService {
@@ -24,6 +25,8 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Rol)
     private rolRepository: Repository<Rol>,
+    @InjectRepository(EmergencyContact)
+    private emergencyContactRepository: Repository<EmergencyContact>,
   ) {}
   //Funcion que valida si el email ya existe.
   private async validateEmail(email: string) {
@@ -216,4 +219,23 @@ export class UserService {
       throw new BadRequestException(`Error to update user: ${userId}`);
     }
   }
+
+//Agregar al controller!!
+ /* public async emergencyContact(createEmergencyContactDto: CreateEmergencyContactDto, userId: number): Promise<User>{
+    const user = await this.findOne(userId)
+
+    if(user){
+      const createContact: CreateEmergencyContactDto ={
+          patientId: userId,
+          firstName: createEmergencyContactDto.firstName,
+          lastName: createEmergencyContactDto.lastName,
+          email: createEmergencyContactDto.email,
+          phoneNumber: createEmergencyContactDto.phoneNumber,
+          relationship: createEmergencyContactDto.relationship,
+          status: createEmergencyContactDto.status,
+        };
+      }
+  return
+  }
+  */
 }

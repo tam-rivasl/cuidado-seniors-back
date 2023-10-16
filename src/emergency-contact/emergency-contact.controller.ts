@@ -9,8 +9,8 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { EmergencyContactService } from './emergency-contact.service';
-import { CreateEmergencyContactDto } from './dto/create-emergency-contact.dto';
 import { UpdateEmergencyContactDto } from './dto/update-emergency-contact.dto';
+import { CreateContactDto } from './dto/contact.dto';
 
 @Controller('emergency-contact')
 export class EmergencyContactController {
@@ -21,11 +21,11 @@ export class EmergencyContactController {
   @Post(':pacientId/create')
   create(
     @Param('pacientId', ParseIntPipe) patientId: number,
-    @Body() createEmergencyContactDto: CreateEmergencyContactDto,
+    @Body() createContactDto: CreateContactDto,
   ) {
     return this.emergencyContactService.createEmergencyContact(
       patientId,
-      createEmergencyContactDto,
+      createContactDto,
     );
   }
 
