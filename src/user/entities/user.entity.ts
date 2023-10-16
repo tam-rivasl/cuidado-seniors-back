@@ -93,8 +93,8 @@ export class User {
 
   @OneToMany(
     () => PatientEmergencyContact,
-    (emergency_contact) => emergency_contact.patientId,
+    (emergency_contactId) => emergency_contactId.patientId,
     { nullable: true },
   )
-  emergency_contact: PatientEmergencyContact;
+  emergency_contactId: PatientEmergencyContact;
 }

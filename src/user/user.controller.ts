@@ -34,7 +34,7 @@ export class UserController {
   }
 
   @Patch(':userId')
-  update(
+  async update(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {

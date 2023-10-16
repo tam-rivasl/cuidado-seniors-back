@@ -7,12 +7,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EmergencyContact } from './nested/emergency_contact.entity';
 import { User } from '../../user/entities/user.entity';
+import { EmergencyContact } from './nested/emergency_contact.entity';
 @Entity()
-export class PatientEmergencyContact extends EmergencyContact {
+export class PatientEmergencyContact {
   @PrimaryGeneratedColumn()
-  patient_emergency_contactId: number;
+  patientContactId: number;
   @CreateDateColumn()
   createdDate: Date;
 
@@ -24,12 +24,12 @@ export class PatientEmergencyContact extends EmergencyContact {
 
   @ManyToOne(
     () => EmergencyContact,
-    (emergency_contact) => emergency_contact.user,
+    (emergency_contactId) => emergency_contactId.user,
   )
   @JoinColumn({ name: 'emergency_contactId' })
   emergency_contact: EmergencyContact;
 
-  @ManyToOne(() => User, (patient) => patient.emergency_contact)
+  @ManyToOne(() => User, (patient) => patient.emergency_contactId)
   @JoinColumn({ name: 'patientId' })
   patientId: User;
 }
