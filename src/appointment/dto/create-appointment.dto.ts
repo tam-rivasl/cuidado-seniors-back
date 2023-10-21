@@ -3,10 +3,11 @@ import {
   IsDate,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
 } from 'class-validator';
-import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
+import { PaymentHistory } from 'src/payment-history/entities/paymentHistory.entity';
+import { PlanService } from 'src/plan-service/entities/planService.entity';
+import { User } from 'src/user/entities/user.entity';
 export enum status {
   CONFIMED = 'confirmed',
   CANCELLED = 'cancelled',
@@ -15,44 +16,30 @@ export enum status {
   EXPIRED = 'expired',
 }
 export class CreateAppointmentDto {
-  @IsNumber()
-  @IsNotEmpty()
-  appointmentId: number;
   //revisar relacion de citas con enfermera y paciente
-  @IsNumber()
-  @IsOptional()
-  patientId: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  nurseId: number;
-
   @Type(() => String)
   @IsEnum(status, {
     each: true,
-    message: 'Status is required',
+    message: 'The provided status is not valid. Valid states are: [confirmed, cancelled, finished, pending, expired].',
+
   })
-  @IsNotEmpty()
-  status: string;
+  @IsOptional()
+  status?: string;
 
   @IsDate()
   @IsNotEmpty()
   date: Date;
 
-  @IsNumber()
   @IsNotEmpty()
-  planServiceId: number;
+  nurse: User
 
-  @IsNumber()
   @IsOptional()
-  payment_historyId?: number;
+  patient?: User
 
-  @CreateDateColumn()
-  createdDate: Date;
+  @IsNotEmpty()
+  plan_service: PlanService;
 
-  @UpdateDateColumn()
-  updatedDate: Date;
 
-  @DeleteDateColumn()
-  deletedDate: Date;
+  @IsOptional()
+  payment_historyId?: PaymentHistory;
 }

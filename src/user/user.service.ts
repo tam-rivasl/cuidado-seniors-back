@@ -12,11 +12,10 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { ICreateUser } from './interfaces/create-user.interface';
 import { PaginationQueryDto } from 'src/common/paginationQueryDto';
 import { Rol, rolType, status } from './entities/rol.entity';
 import { CreateRolDto } from './dto/create-rol.dto';
-import { EmergencyContact } from 'src/emergency-contact/entities/nested/emergency_contact.entity';
+import { ICreateUser } from './interfaces/create-user.interface';
 
 @Injectable()
 export class UserService {
@@ -25,8 +24,6 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Rol)
     private rolRepository: Repository<Rol>,
-    @InjectRepository(EmergencyContact)
-    private emergencyContactRepository: Repository<EmergencyContact>,
   ) {}
   //Funcion que valida si el email ya existe.
   private async validateEmail(email: string) {
@@ -160,6 +157,7 @@ export class UserService {
     const findAllUser = await this.userRepository.find({
       take: limit,
       skip: offset,
+      relations: ['rol']
     });
     if (!findAllUser) {
       throw new NotFoundException('Not users to find');
@@ -172,6 +170,7 @@ export class UserService {
   public async findOne(userId: number) {
     const findUser = await this.userRepository.findOne({
       where: { userId: userId },
+      relations: ['rol']
     });
     if (!findUser) {
       throw new NotFoundException(`Not found user: ${userId}`);

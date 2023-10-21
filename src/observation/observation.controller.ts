@@ -1,34 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
 import { ObservationService } from './observation.service';
-import { CreateObservationDto } from './dto/create-observation.dto';
-import { UpdateObservationDto } from './dto/update-observation.dto';
+import { ObservationDto } from './dto/create-observation.dto';
+import { Observation } from './entities/observation.entity';
+import { PaginationQueryDto } from 'src/common/paginationQueryDto';
 
 @Controller('observation')
 export class ObservationController {
   constructor(private readonly observationService: ObservationService) {}
 
-  @Post()
-  create(@Body() createObservationDto: CreateObservationDto) {
-    return this.observationService.create(createObservationDto);
+  @Post('patientId/:patientId')
+  async createObservationPatient(
+    @Param('patientId', ParseIntPipe) patientId: number,
+    @Body() observationDto: ObservationDto
+    ) {
+    return this.observationService.createObservationPatient(observationDto, patientId);
   }
-
-  @Get()
-  findAll() {
-    return this.observationService.findAll();
+  @Post('nurseId/:nurseId/patientId/:patientId')
+  async createObservationNurse(
+    @Param('nurseId', ParseIntPipe) nurseId: number,
+    @Param('patientId', ParseIntPipe) patientId: number,
+    @Body() observationDto: ObservationDto
+    ) {
+    return this.observationService.createObservationNurse(observationDto, nurseId, patientId);
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.observationService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateObservationDto: UpdateObservationDto) {
-    return this.observationService.update(+id, updateObservationDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.observationService.remove(+id);
+  @Get('patientId/:patientId')
+  findByPatientId(
+    @Param('patientId', ParseIntPipe) patientId: number,
+    @Query() paginationQueryDto: PaginationQueryDto<Observation>
+  ) {
+    return this.observationService.findByPatientId(patientId, paginationQueryDto);
   }
 }

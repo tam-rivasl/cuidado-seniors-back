@@ -3,14 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
 import { EmergencyContactService } from './emergency-contact.service';
-import { UpdateEmergencyContactDto } from './dto/update-emergency-contact.dto';
 import { PatientContactDto } from './dto/patientContact.dto';
 import { PatientEmergencyContact } from './entities/patient_emergency_contact.entity';
 import { PaginationQueryDto } from 'src/common/paginationQueryDto';
@@ -46,18 +44,6 @@ export class EmergencyContactController {
   ) {
     return this.emergencyContactService.findOne(emergencyContactId);
   }
-
-  /*@Patch(':patientContactId/update')
-  update(
-    @Param('patientContactId', ParseIntPipe)
-    patientContactId: number,
-    @Body() updateEmergencyContactDto: UpdateEmergencyContactDto,
-  ) {
-    return this.emergencyContactService.update(
-      patientContactId,
-      updateEmergencyContactDto,
-    );
-  }*/
 
   @Delete(':patientId/:emergencyContactId/delete')
   async remove(

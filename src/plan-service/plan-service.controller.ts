@@ -1,25 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
 import { PlanServiceService } from './plan-service.service';
 import { CreatePlanServiceDto } from './dto/create-plan-service.dto';
 import { UpdatePlanServiceDto } from './dto/update-plan-service.dto';
+import { string } from 'joi';
+import { PaginationQueryDto } from 'src/common/paginationQueryDto';
+import { remove } from 'winston';
+import { PlanService } from './entities/planService.entity';
 
 @Controller('plan-service')
 export class PlanServiceController {
   constructor(private readonly planServiceService: PlanServiceService) {}
 
   @Post()
-  create(@Body() createPlanServiceDto: CreatePlanServiceDto) {
+  async create(@Body() createPlanServiceDto: CreatePlanServiceDto) {
     return this.planServiceService.create(createPlanServiceDto);
   }
 
   @Get()
-  findAll() {
-    return this.planServiceService.findAll();
+  async findAll(
+    @Query() paginationQueryDto: PaginationQueryDto<PlanService>) {
+    return this.planServiceService.findAll(paginationQueryDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.planServiceService.findOne(+id);
+  @Get(':planServiceId')
+  findOne(@Param('planServiceId', ParseIntPipe) planServiceId: number) {
+    return this.planServiceService.findOne(planServiceId);
   }
 
   @Patch(':id')

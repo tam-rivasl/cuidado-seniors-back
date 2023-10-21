@@ -6,41 +6,57 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { ParseIntPipe } from '@nestjs/common';
+import { PaginationQueryDto } from 'src/common/paginationQueryDto';
+import { Appointment } from './entities/appointment.entity';
 
 @Controller('appointment')
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
-  @Post('create')
+  @Post('nurseId/:nurseId/planServiceId/:planServiceId')
   async createAppointment(
-    @Param('userId', ParseIntPipe) userId: number,
     @Param('nurseId', ParseIntPipe) nurseId: number,
-    @Param('plan_serviceId', ParseIntPipe) plan_serviceId: number,
+    @Param('planServiceId', ParseIntPipe) planServiceId: number,
     @Body() createAppointmentDto: CreateAppointmentDto,
   ) {
     return this.appointmentService.createAppointment(
       createAppointmentDto,
-      userId,
       nurseId,
-      plan_serviceId,
+      planServiceId,
+    );
+  }
+
+  @Post('nurseId/:nurseId/patientId/:patientId/create')
+  async createAppointmentPatient(
+    @Param('nurseId', ParseIntPipe) nurseId: number,
+    @Param('patientId', ParseIntPipe) patientId: number,
+    @Body() createAppointmentDto: CreateAppointmentDto,
+  ) {
+    return this.appointmentService.createAppointmentPatient(
+      patientId,
+      nurseId,
+      createAppointmentDto,
     );
   }
 
   @Get()
-  findAll() {
-    return this.appointmentService.findAll();
+ async findAll(
+    @Query() paginationQueryDto: PaginationQueryDto<Appointment>
+  ) {
+    return this.appointmentService.findAll(paginationQueryDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.appointmentService.findOne(+id);
+  @Get(':appointmentId')
+  findOne(@Param('appointmentId', ParseIntPipe) appointmentId: number) {
+    return this.appointmentService.findOne(appointmentId);
   }
-
+//hacerlo despues
   @Patch(':id')
   update(
     @Param('id') id: string,

@@ -39,7 +39,7 @@ export class Observation {
     type: 'enum',
     enum: observationType,
   })
-  observtionType: string;
+  observationType: string;
 
   @CreateDateColumn()
   createdDate: Date;

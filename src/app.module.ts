@@ -32,6 +32,7 @@ import { MedicalRecordModule } from './medical-record/medical-record.module';
 import { PaymentController } from './payment/payment.controller';
 import { PaymentService } from './payment/payment.service';
 import { Payment } from './payment/entities/payment.entity';
+import { PlanService } from './plan-service/entities/planService.entity';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { Payment } from './payment/entities/payment.entity';
       Rol,
       PaymentHistory,
       Payment,
+      PlanService,
     ]),
     TypeOrmModule.forRoot({
       type: 'postgres', // type of our database

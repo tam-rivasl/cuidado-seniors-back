@@ -13,10 +13,7 @@ export enum status {
   INACTIVE = 'inactive',
 }
 export class CreatePlanServiceDto {
-  @IsNumber()
-  @IsNotEmpty()
-  planServiceId: number;
-
+ 
   @IsString()
   @IsNotEmpty()
   planServiceName: string;
@@ -41,13 +38,4 @@ export class CreatePlanServiceDto {
   @IsEnum(status)
   @IsNotEmpty({ message: 'Status is required' })
   status: string;
-
-  @CreateDateColumn()
-  createdDate: Date;
-
-  @UpdateDateColumn()
-  updatedDate: Date;
-
-  @DeleteDateColumn()
-  deletedDate: Date;
 }
