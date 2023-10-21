@@ -26,13 +26,13 @@ export class CreatePlanServiceDto {
   @IsNotEmpty()
   description: string;
 
-  @IsDate()
+  @IsString()
   @IsNotEmpty()
-  startTime: Date;
+  startTime: string;
 
-  @IsDate()
+  @IsString()
   @IsNotEmpty()
-  endTime: Date;
+  endTime: string;
 
   @Type(() => String)
   @IsEnum(status)

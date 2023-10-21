@@ -57,16 +57,18 @@ export class AppointmentService {
     console.log('resultado de la cita creada por la enfermera', result)
     return result
   }
-//TODO: DESCUBRIR PORQUE NO BUSCA EL ID DE PATIENT
-public async createAppointmentPatient(patientId: number, nurseId: number, createAppointmentDto: CreateAppointmentDto){
+
+public async createAppointmentPatient(patientId: number, appointmentId: number){
   const patient = await this.userRepository.findOne({
     where: { userId: patientId },
   });
-if(!patient){
-  throw new NotFoundException(`User not found with ID ${patientId}`)
+  const appointment = await this.appointmentRepository.findOne({
+    where: {appointmentId: appointmentId}
+  })
+if(!patient || !appointment){
+  throw new NotFoundException(`User not found with ID ${patientId} or Appointment not found with Id  ${appointmentId} `)
 }
 try{
- const appointment = await this.createAppointment(createAppointmentDto, nurseId, patientId );
  appointment.patient = patient;
  appointment.status = status.CONFIMED;
  const result = await this.appointmentRepository.save(appointment);

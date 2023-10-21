@@ -1,4 +1,3 @@
-import { status } from '../dto/create-rol.dto';
 export interface ICreateUser {
   userId: number;
   firstName: string;

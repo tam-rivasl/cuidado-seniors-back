@@ -22,11 +22,10 @@ export class PlanService {
   price: number;
   @Column({ name: 'description', nullable: false })
   description: string;
-  @Column({ name: 'startTime', type: 'timestamptz', nullable: false })
-  startTime: Date;
-  @Column({ name: 'endTime', type: 'timestamptz', nullable: false })
-  endTime: Date;
-
+  @Column({ name: 'startTime', type: 'time', nullable: false })
+  startTime: string;
+  @Column({ name: 'endTime', type: 'time', nullable: false })
+  endTime: string;
   @Column({
     name: 'status',
     nullable: false,

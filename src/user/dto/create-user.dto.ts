@@ -9,12 +9,13 @@ import {
 import { CreateContactDto } from 'src/emergency-contact/dto/contact.dto';
 import { CreateMedicalRecordDto } from 'src/medical-record/dto/create-medical-record.dto';
 import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
+import { Rol } from '../entities/rol.entity';
 
 export class CreateUserDto {
 
 
   @IsNotEmpty()
-  rolName: CreateUserDto;
+  rolId: Rol;
 
   @IsOptional()
   medicalRecord: CreateMedicalRecordDto;

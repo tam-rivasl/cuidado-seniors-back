@@ -32,16 +32,14 @@ export class AppointmentController {
     );
   }
 
-  @Post('nurseId/:nurseId/patientId/:patientId/create')
+  @Post('patientId/:patientId/appointmentId/:appointmentId/create')
   async createAppointmentPatient(
-    @Param('nurseId', ParseIntPipe) nurseId: number,
+    @Param('appointmentId', ParseIntPipe) appointmentId: number,
     @Param('patientId', ParseIntPipe) patientId: number,
-    @Body() createAppointmentDto: CreateAppointmentDto,
   ) {
     return this.appointmentService.createAppointmentPatient(
       patientId,
-      nurseId,
-      createAppointmentDto,
+      appointmentId,
     );
   }
 

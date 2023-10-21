@@ -13,7 +13,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { PaginationQueryDto } from 'src/common/paginationQueryDto';
-import { Rol, rolType, status } from './entities/rol.entity';
+import { Rol, status } from './entities/rol.entity';
 import { CreateRolDto } from './dto/create-rol.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
 
@@ -63,26 +63,10 @@ export class UserService {
     }
   }
 
-  async createRol(rolName: any): Promise<Rol> {
-
-    console.log('ola2');
-    if (rolName === 'nurse') {
-      rolName = rolType.NURSE;
-      console.log('rolname', rolName);
-    } else if (rolName === 'secretary') {
-      rolName = rolType.SECRETARY;
-      console.log('rolname',rolName);
-    } else {
-      rolName = rolType.user;
-    }
+ public async createRol(createRolDto: CreateRolDto): Promise<Rol> {
     // Busca el rol en la base de datos o crea uno si no existe
-    const rol = await this.rolRepository.findOne({
-      where: { rolName:rolName },
-    });
-    if (!rol) {
-      // El rol no existe, así que lo creamos
-      const newRol: CreateRolDto = await this.rolRepository.create({
-        rolName: rolName,
+      const newRol: CreateRolDto =  this.rolRepository.create({
+        rolName: createRolDto.rolName,
         status: status.ACTIVE,
       });
       console.log('new rol:', newRol);
@@ -93,10 +77,6 @@ export class UserService {
       } catch (e) {
         throw new ConflictException(e.message, 'Error to create rol');
       }
-    }else{
-    const preload = await this.rolRepository.preload(rol)
-    return preload;
-    }
   }
   public async userCreate(createUserDto: CreateUserDto): Promise<ICreateUser> {
     if (createUserDto.identificationNumber) {
@@ -126,10 +106,10 @@ export class UserService {
       password: pass,
       gender: createUserDto.gender,
       status: createUserDto.status,
+      rol: createUserDto.rolId,
     });
-    const rol = await this.createRol(createUserDto.rolName);
-    user.rol = rol;
-    console.log('rol',rol)
+    
+    console.log('user',user)
     try {
       const save = await this.userRepository.save(user);
       console.log('save', save);

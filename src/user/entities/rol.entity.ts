@@ -5,6 +5,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
@@ -12,12 +13,9 @@ export enum status {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
 }
-export enum rolType {
-  NURSE = 'nurse',
-  user = 'user',
-  SECRETARY = 'secretary',
-}
 @Entity()
+@Unique(['rolId'])
+@Unique(['rolName'])
 export class Rol {
   @PrimaryGeneratedColumn()
   rolId: number;
@@ -32,8 +30,6 @@ export class Rol {
   @Column({
     name: 'rolName',
     nullable: false,
-    type: 'enum',
-    enum: rolType,
   })
   rolName: string;
   @CreateDateColumn()
