@@ -15,10 +15,6 @@ export class PaginationQueryDto<TData> {
   limit?: number;
 
   @IsOptional()
-  @IsString()
-  identificationNumber: string;
-
-  @IsOptional()
   @IsNumber()
   userId: number;
 

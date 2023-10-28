@@ -14,6 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationQueryDto } from 'src/common/paginationQueryDto';
 import { User } from './entities/user.entity';
 import { CreateRolDto } from './dto/create-rol.dto';
+import { LoginDto } from './dto/loginDto.dto';
 
 @Controller('user')
 export class UserController {
@@ -27,6 +28,12 @@ export class UserController {
   async register(@Body() createUserDto: CreateUserDto) {
     return await this.userService.userCreate(createUserDto);
   }
+
+  @Post('login')
+  async login(@Body() loginDto: LoginDto) {
+    return await this.userService.login(loginDto);
+  }
+
 
   @Get()
   async findAll(@Query() paginationQueryDto: PaginationQueryDto<User>) {

@@ -1,12 +1,11 @@
 import { Type } from 'class-transformer';
 import {
-  IsDate,
   IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsString,
 } from 'class-validator';
-import { PlanService } from 'src/plan-service/entities/planService.entity';
 import { User } from 'src/user/entities/user.entity';
 export enum status {
   CONFIMED = 'confirmed',
@@ -15,8 +14,8 @@ export enum status {
   PENDING = 'pending',
   EXPIRED = 'expired',
 }
-export class CreateAppointmentDto {
-  //revisar relacion de citas con enfermera y paciente
+export class CreatePatientAppointmentDto {
+
   @Type(() => String)
   @IsEnum(status, {
     each: true,
@@ -26,16 +25,11 @@ export class CreateAppointmentDto {
   @IsOptional()
   status?: string;
 
-  @IsDate()
-  @IsNotEmpty()
-  date: Date;
-
+  @IsOptional()
   @IsNumber()
-  @IsNotEmpty()
-  nurseId: number;
+  appointmentId: number;
 
-  @IsNumber()
   @IsNotEmpty()
-  plan_serviceId: number;
+  patient?: User
 
 }

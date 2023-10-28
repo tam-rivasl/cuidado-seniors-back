@@ -10,4 +10,5 @@ export interface ICreateUser {
   password: string;
   gender: string;
   status: string,
+  address: string;
 }

@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,6 +17,7 @@ import { PaginationQueryDto } from 'src/common/paginationQueryDto';
 import { Rol, status } from './entities/rol.entity';
 import { CreateRolDto } from './dto/create-rol.dto';
 import { ICreateUser } from './interfaces/create-user.interface';
+import { LoginDto } from './dto/loginDto.dto';
 
 @Injectable()
 export class UserService {
@@ -47,7 +49,7 @@ export class UserService {
       return hash;
     });
   }
-  private async validateDocumentNumber(
+  private async findDocumentNumber(
     identificationNumber: string,
   ): Promise<User> {
     const result = await this.userRepository.findOne({
@@ -62,38 +64,26 @@ export class UserService {
       return this.sanitizeUser(result);
     }
   }
-
- public async createRol(createRolDto: CreateRolDto): Promise<Rol> {
+  public async createRol(createRolDto: CreateRolDto): Promise<Rol> {
     // Busca el rol en la base de datos o crea uno si no existe
-      const newRol: CreateRolDto =  this.rolRepository.create({
-        rolName: createRolDto.rolName,
-        status: status.ACTIVE,
-      });
-      console.log('new rol:', newRol);
-      try {
-        const save = await this.rolRepository.save(newRol);
-        console.log('result rol:', save);
-        return save;
-      } catch (e) {
-        throw new ConflictException(e.message, 'Error to create rol');
-      }
+    const newRol: CreateRolDto = this.rolRepository.create({
+      rolName: createRolDto.rolName,
+      status: status.ACTIVE,
+    });
+    console.log('new rol:', newRol);
+    try {
+      const save = await this.rolRepository.save(newRol);
+      console.log('result rol:', save);
+      return save;
+    } catch (e) {
+      throw new ConflictException(e.message, 'Error to create rol');
+    }
   }
   public async userCreate(createUserDto: CreateUserDto): Promise<ICreateUser> {
-    if (createUserDto.identificationNumber) {
-      try {
-        // regex clean .
-        const identificationNumber = createUserDto.identificationNumber.replace(
-          /\./g,
-          '',
-        );
-        await this.validateDocumentNumber(identificationNumber);
-      } catch (e) {
-        throw new BadRequestException('identificationNumber already exists');
-      }
-    }
-    if (createUserDto.email) {
-      await this.validateEmail(createUserDto.email.toLocaleLowerCase());
-    }
+    // regex clean .
+
+    await this.findDocumentNumber(createUserDto.identificationNumber);
+    await  this.validateEmail(createUserDto.email.toLocaleLowerCase());
     const pass = await this.encodePassword(createUserDto.password);
     const user = this.userRepository.create({
       firstName: createUserDto.firstName,
@@ -105,11 +95,14 @@ export class UserService {
       phoneNumber: createUserDto.phoneNumber,
       password: pass,
       gender: createUserDto.gender,
-      status: createUserDto.status,
-      rol: createUserDto.rolId,
+      address: createUserDto.adress,
+      status: status.ACTIVE,
+      rol:{
+        rolId: createUserDto.rolId
+      }
     });
-    
-    console.log('user',user)
+
+    console.log('user', user);
     try {
       const save = await this.userRepository.save(user);
       console.log('save', save);
@@ -123,8 +116,9 @@ export class UserService {
         age: createUserDto.age,
         identificationNumber: save.identificationNumber,
         password: createUserDto.password,
+        address: createUserDto.adress,
         gender: createUserDto.gender,
-        status: createUserDto.status,
+        status: status.ACTIVE,
       };
       return result;
     } catch (e) {
@@ -132,12 +126,43 @@ export class UserService {
     }
   }
 
+  public async login(loginDto: LoginDto) {
+    const { email, password } = loginDto;
+
+    // Busca al usuario por su dirección de correo electrónico
+    const user = await this.userRepository.findOne({ where: { email }, relations: ['rol'] });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    console.log('contrasena encriptada', user.password);
+    if (!user.password) {
+      throw new UnauthorizedException('Incorrect credencials');
+    }
+
+    if (!user.email) {
+      throw new UnauthorizedException('Incorrect credencials');
+    }
+    // Compara la contraseña ingresada en el DTO (en texto claro) con la contraseña almacenada en la base de datos (encriptada)
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log(isPasswordValid);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid password');
+    }
+
+    // Genera un token JWT para el usuario al iniciar sesión correctamente
+    const payload = { rolId: user.rol.rolId, email: user.email, userId: user.userId, rolName: user.rol.rolName, firstName: user.firstName, lastName: user.lastName };
+
+    return payload;
+  }
+
   public async findAll(paginationQueryDto: PaginationQueryDto<User>) {
     const { limit, offset } = paginationQueryDto;
     const findAllUser = await this.userRepository.find({
       take: limit,
       skip: offset,
-      relations: ['rol']
+      relations: ['rol'],
     });
     if (!findAllUser) {
       throw new NotFoundException('Not users to find');
@@ -150,7 +175,7 @@ export class UserService {
   public async findOne(userId: number) {
     const findUser = await this.userRepository.findOne({
       where: { userId: userId },
-      relations: ['rol']
+      relations: ['rol'],
     });
     if (!findUser) {
       throw new NotFoundException(`Not found user: ${userId}`);
@@ -172,7 +197,7 @@ export class UserService {
         findUser.identificationNumber,
       ) !== 0
     ) {
-      await this.validateDocumentNumber(updateUserDto.identificationNumber);
+      await this.findDocumentNumber(updateUserDto.identificationNumber);
     }
     if (updateUserDto.email.localeCompare(findUser.email) !== 0) {
       email = updateUserDto.email.toLocaleLowerCase();
@@ -199,8 +224,8 @@ export class UserService {
     }
   }
 
-//Agregar al controller!!
- /* public async emergencyContact(createEmergencyContactDto: CreateEmergencyContactDto, userId: number): Promise<User>{
+  //Agregar al controller!!
+  /* public async emergencyContact(createEmergencyContactDto: CreateEmergencyContactDto, userId: number): Promise<User>{
     const user = await this.findOne(userId)
 
     if(user){

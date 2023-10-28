@@ -33,6 +33,7 @@ import { PaymentController } from './payment/payment.controller';
 import { PaymentService } from './payment/payment.service';
 import { Payment } from './payment/entities/payment.entity';
 import { PlanService } from './plan-service/entities/planService.entity';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { PlanService } from './plan-service/entities/planService.entity';
     Appointment,
     EmergencyContactModule,
     MedicalRecordModule,
+
     TypeOrmModule.forFeature([
       EmergencyContact,
       PatientEmergencyContact,
@@ -86,7 +88,7 @@ import { PlanService } from './plan-service/entities/planService.entity';
     ObservationService,
     PaymentHistoryService,
     PaymentService,
-    PlanServiceService,
+    PlanServiceService
   ],
 })
 export class AppModule {}

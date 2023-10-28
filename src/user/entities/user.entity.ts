@@ -46,6 +46,8 @@ export class User {
   identificationNumber: string;
   @Column({ name: 'password', nullable: false })
   password: string;
+  @Column({ name: 'adress', nullable: false })
+  address: string;
   @Column({
     name: 'gender',
     nullable: false,

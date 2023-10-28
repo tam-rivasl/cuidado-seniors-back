@@ -41,6 +41,12 @@ export class Appointment {
   @DeleteDateColumn()
   deletedDate: Date;
 
+  @Column({ name: 'nurseId', nullable: false})
+  nurseId: number;
+
+  @Column({ name: 'plan_serviceId', nullable: false})
+  plan_serviceId: number;
+
   @ManyToOne(() => User, (patient) => patient.patient_appointment, {
     nullable: true,
   })

@@ -14,32 +14,29 @@ import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { ParseIntPipe } from '@nestjs/common';
 import { PaginationQueryDto } from 'src/common/paginationQueryDto';
 import { Appointment } from './entities/appointment.entity';
+import { number } from 'joi';
+import { CreatePatientAppointmentDto } from './dto/createPatientAppointment.dto';
+import { FindByDateDto } from './dto/findByDateDto.dto';
 
 @Controller('appointment')
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
-  @Post('nurseId/:nurseId/planServiceId/:planServiceId')
+  @Post('create/appointment')
   async createAppointment(
-    @Param('nurseId', ParseIntPipe) nurseId: number,
-    @Param('planServiceId', ParseIntPipe) planServiceId: number,
     @Body() createAppointmentDto: CreateAppointmentDto,
   ) {
     return this.appointmentService.createAppointment(
       createAppointmentDto,
-      nurseId,
-      planServiceId,
     );
   }
-
-  @Post('patientId/:patientId/appointmentId/:appointmentId/create')
+//mejorar
+  @Post('assign/appointment')
   async createAppointmentPatient(
-    @Param('appointmentId', ParseIntPipe) appointmentId: number,
-    @Param('patientId', ParseIntPipe) patientId: number,
+    @Body() createPatientAppointmentDto: CreatePatientAppointmentDto,
   ) {
     return this.appointmentService.createAppointmentPatient(
-      patientId,
-      appointmentId,
+      createPatientAppointmentDto,
     );
   }
 
@@ -50,11 +47,17 @@ export class AppointmentController {
     return this.appointmentService.findAll(paginationQueryDto);
   }
 
+
   @Get(':appointmentId')
   findOne(@Param('appointmentId', ParseIntPipe) appointmentId: number) {
     return this.appointmentService.findOne(appointmentId);
   }
-//hacerlo despues
+
+  @Post('/byDate')
+  findAppointmentByDate(@Body() findByDateDto: FindByDateDto) {
+    return this.appointmentService.findAppointmentByDate(findByDateDto);
+  }
+    //hacerlo despues
   @Patch(':id')
   update(
     @Param('id') id: string,

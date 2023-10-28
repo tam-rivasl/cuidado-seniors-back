@@ -3,11 +3,9 @@ import {
   IsDate,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
 } from 'class-validator';
 import { PlanService } from 'src/plan-service/entities/planService.entity';
-import { User } from 'src/user/entities/user.entity';
 export enum status {
   CONFIMED = 'confirmed',
   CANCELLED = 'cancelled',
@@ -15,7 +13,7 @@ export enum status {
   PENDING = 'pending',
   EXPIRED = 'expired',
 }
-export class CreateAppointmentDto {
+export class FindByDateDto {
   //revisar relacion de citas con enfermera y paciente
   @Type(() => String)
   @IsEnum(status, {
@@ -30,12 +28,8 @@ export class CreateAppointmentDto {
   @IsNotEmpty()
   date: Date;
 
-  @IsNumber()
-  @IsNotEmpty()
-  nurseId: number;
 
-  @IsNumber()
   @IsNotEmpty()
-  plan_serviceId: number;
+  plan_service: PlanService;
 
 }

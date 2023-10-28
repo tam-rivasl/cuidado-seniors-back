@@ -13,10 +13,9 @@ import { Rol } from '../entities/rol.entity';
 
 export class CreateUserDto {
 
-
+  @IsNumber()
   @IsNotEmpty()
-  rolId: Rol;
-
+  rolId: number;
   @IsOptional()
   medicalRecord: CreateMedicalRecordDto;
 
@@ -60,7 +59,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  status: string;
+  adress: string;
 
   @CreateDateColumn()
   createdDate: Date;
