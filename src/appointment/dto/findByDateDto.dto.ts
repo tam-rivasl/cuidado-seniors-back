@@ -30,6 +30,6 @@ export class FindByDateDto {
 
 
   @IsNotEmpty()
-  plan_service: PlanService;
+  plan_serviceId: number;
 
 }

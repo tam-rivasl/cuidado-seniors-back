@@ -101,18 +101,19 @@ export class AppointmentService {
   public async findAppointmentByDate(
     findByDateDto: FindByDateDto
   ): Promise<IAppointment[]> {
-    const planServiceId = findByDateDto.plan_service.plan_serviceId
+    const planServiceId = findByDateDto.plan_serviceId
     console.log('id', planServiceId)
+    const date = findByDateDto.date;
+    console.log(date);
       const appointments = await this.appointmentRepository.find({
         where: {
           date: findByDateDto.date,
           status: 'pending',
-          plan_service: {
-            plan_serviceId: planServiceId
-          } ,
+          plan_serviceId: planServiceId
         },
         relations: ['nurse', 'plan_service'],
       });
+      console.log(appointments,'fin by date')
       console.log('cita', appointments.length)
       if(appointments.length === 0) {
         throw new NotFoundException('Not found appointments for this date');
@@ -121,7 +122,7 @@ export class AppointmentService {
         appointmentId: appointment.appointmentId,
         date: appointment.date,
         status: appointment.status,
-        planService: appointment.plan_service,
+        planServiceId: appointment.plan_serviceId,
         nurse: appointment.nurse,
       }));
 
@@ -135,6 +136,7 @@ export class AppointmentService {
     const patientId = createPatientAppointmentDto.patientId;
     console.log('id???',patientId)
     const selectedAppointmentId = createPatientAppointmentDto.appointmentId;
+    console.log(selectedAppointmentId,'id servicio')
       const patient = await this.userRepository.findOne({
         where: { userId: patientId},
       });
