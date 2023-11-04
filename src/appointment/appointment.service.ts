@@ -157,7 +157,7 @@ export class AppointmentService {
         throw new ConflictException('Appointment is not pending');
       }
       console.log('fecha',date);
-      this.validateDate(date)
+      //this.validateDate(date)
       appointment.patientId = patientId;
       appointment.status = 'confirmed'; // Cambia "status.CONFIMED" a "confirmed"
       console.log('usuario',patient)

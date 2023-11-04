@@ -171,6 +171,21 @@ export class UserService {
     }
   }
 
+  public async findAllNurses(paginationQueryDto: PaginationQueryDto<User>) {
+    const { limit, offset } = paginationQueryDto;
+    const findAllUser = await this.userRepository.find({
+      where: {rol: {rolName: 'nurse'}},
+      take: limit,
+      skip: offset,
+      relations: ['rol'],
+    });
+    if (!findAllUser) {
+      throw new NotFoundException('Not nurses to find');
+    } else {
+      return findAllUser;
+    }
+  }
+
   //validar que se caiga cuando no existe el id
   public async findOne(userId: number) {
     const findUser = await this.userRepository.findOne({

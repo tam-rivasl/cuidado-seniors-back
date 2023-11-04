@@ -35,10 +35,16 @@ export class UserController {
   }
 
 
+  @Get('find/nurses')
+  async findAllNurses(@Query() paginationQueryDto: PaginationQueryDto<User>) {
+    return this.userService.findAllNurses(paginationQueryDto);
+  }
+
   @Get()
   async findAll(@Query() paginationQueryDto: PaginationQueryDto<User>) {
     return this.userService.findAll(paginationQueryDto);
   }
+
 
   @Get(':userId')
   async findOne(@Param('userId', ParseIntPipe) userId: number) {
