@@ -44,13 +44,16 @@ export class Appointment {
   @Column({ name: 'nurseId', nullable: false})
   nurseId: number;
 
+  @Column({ name: 'patientId', nullable: true})
+  patientId: number;
+  
   @Column({ name: 'plan_serviceId', nullable: false})
   plan_serviceId: number;
 
   @ManyToOne(() => User, (patient) => patient.patient_appointment, {
     nullable: true,
   })
-  @JoinColumn({ name: 'patientId' })
+  @JoinColumn({ name: 'patientId'})
   patient: User;
 
   @ManyToOne(() => User, (nurse) => nurse.nurse_appointment)

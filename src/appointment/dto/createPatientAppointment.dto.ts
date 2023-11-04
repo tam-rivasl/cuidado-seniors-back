@@ -30,6 +30,6 @@ export class CreatePatientAppointmentDto {
   appointmentId: number;
 
   @IsNotEmpty()
-  patient?: User
+  patientId?: number;
 
 }

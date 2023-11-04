@@ -33,10 +33,11 @@ import { PaymentController } from './payment/payment.controller';
 import { PaymentService } from './payment/payment.service';
 import { Payment } from './payment/entities/payment.entity';
 import { PlanService } from './plan-service/entities/planService.entity';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     UserModule,
     ObservationModule,
     PaymentHistoryModule,

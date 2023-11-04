@@ -10,11 +10,9 @@ import {
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { ParseIntPipe } from '@nestjs/common';
 import { PaginationQueryDto } from 'src/common/paginationQueryDto';
 import { Appointment } from './entities/appointment.entity';
-import { number } from 'joi';
 import { CreatePatientAppointmentDto } from './dto/createPatientAppointment.dto';
 import { FindByDateDto } from './dto/findByDateDto.dto';
 
@@ -57,17 +55,5 @@ export class AppointmentController {
   findAppointmentByDate(@Body() findByDateDto: FindByDateDto) {
     return this.appointmentService.findAppointmentByDate(findByDateDto);
   }
-    //hacerlo despues
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateAppointmentDto: UpdateAppointmentDto,
-  ) {
-    return this.appointmentService.update(+id, updateAppointmentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.appointmentService.remove(+id);
-  }
+    
 }
