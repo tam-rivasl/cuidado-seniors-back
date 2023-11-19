@@ -15,6 +15,7 @@ import { CreatePatientAppointmentDto } from './dto/createPatientAppointment.dto'
 import { IAppointment } from './interfaces/appointment.interface';
 import { FindByDateDto } from './dto/findByDateDto.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { stat } from 'fs';
 export enum status {
   CONFIMED = 'confirmed',
   CANCELLED = 'cancelled',
@@ -33,21 +34,18 @@ export class AppointmentService {
     private readonly planserviceRespository: Repository<PlanService>,
   ) {}
 
-
-  async validateDate(date: Date){
+  async validateDate(date: Date) {
     const newDate = new Date();
     newDate.setHours(-4, 0, 0);
-    if(date < newDate){
-      throw new ConflictException('Not valid date for this appointment')
+    if (date < newDate) {
+      throw new ConflictException('Not valid date for this appointment');
     }
   }
   //crear planes de servicio y login primero antes de terminar esto.
-  public async createAppointment(
-    createAppointmentDto: CreateAppointmentDto,
-  ) {
+  public async createAppointment(createAppointmentDto: CreateAppointmentDto) {
     console.log('first flag');
-    const nurseId = createAppointmentDto.nurseId
-    const planServiceId = createAppointmentDto.plan_serviceId
+    const nurseId = createAppointmentDto.nurseId;
+    const planServiceId = createAppointmentDto.plan_serviceId;
     // Verificar si existe el usuario (paciente)
     const nurse = await this.userRepository.findOne({
       where: { userId: nurseId },
@@ -62,112 +60,112 @@ export class AppointmentService {
         `User not found with ID ${nurseId} or Plan service not found ${planServiceId} `,
       );
     }
-  const date = createAppointmentDto.date;
-  console.log('fecha',date);
-   this.validateDate(date)
-  const findDate = await this.appointmentRepository.find({
-    where: {
-      date: date,
-      nurse: { userId: nurseId }, // Asumiendo que nurseId es el ID del enfermero
-      plan_service: { plan_serviceId: planServiceId }, // Asumiendo que plan.plan_serviceId es el ID del servicio de plan
-    },
-    relations: ['nurse', 'plan_service'],
-  });
-  console.log('nurseee', nurse)
-   console.log('find date', findDate);
-  if(findDate.length){
-    throw new ConflictException('Date already taken for this appointment')
-  }
-  console.log('first flag')
+    const date = createAppointmentDto.date;
+    console.log('fecha', date);
+    this.validateDate(date);
+    const findDate = await this.appointmentRepository.find({
+      where: {
+        date: date,
+        nurse: { userId: nurseId }, // Asumiendo que nurseId es el ID del enfermero
+        plan_service: { plan_serviceId: planServiceId }, // Asumiendo que plan.plan_serviceId es el ID del servicio de plan
+      },
+      relations: ['nurse', 'plan_service'],
+    });
+    console.log('nurseee', nurse);
+    console.log('find date', findDate);
+    if (findDate.length) {
+      throw new ConflictException('Date already taken for this appointment');
+    }
+    console.log('first flag');
     const appointment: CreateAppointmentDto = {
       status: status.PENDING,
       date: createAppointmentDto.date,
       plan_serviceId: planServiceId,
-      nurseId: nurseId
+      nurseId: nurseId,
     };
-    const create =  this.appointmentRepository.create(appointment);
+    const create = this.appointmentRepository.create(appointment);
     console.log('creacion de cita', create);
-  try{
-      console.log('se cae?')
-    const result = await this.appointmentRepository.save(create);
-    console.log('resultado de la cita creada por la enfermera', result);
-    return result;
-  }catch(e){
-    console.log(e);
-    throw new ConflictException('Error to create appointment')
+    try {
+      console.log('se cae?');
+      const result = await this.appointmentRepository.save(create);
+      console.log('resultado de la cita creada por la enfermera', result);
+      return result;
+    } catch (e) {
+      console.log(e);
+      throw new ConflictException('Error to create appointment');
+    }
   }
-}
 
   public async findAppointmentByDate(
-    findByDateDto: FindByDateDto
+    findByDateDto: FindByDateDto,
   ): Promise<IAppointment[]> {
-    const planServiceId = findByDateDto.plan_serviceId
-    console.log('id', planServiceId)
+    const planServiceId = findByDateDto.plan_serviceId;
+    console.log('id', planServiceId);
     const date = findByDateDto.date;
     console.log(date);
-      const appointments = await this.appointmentRepository.find({
-        where: {
-          date: findByDateDto.date,
-          status: 'pending',
-          plan_serviceId: planServiceId
-        },
-        relations: ['nurse', 'plan_service'],
-      });
-      console.log(appointments,'fin by date')
-      console.log('cita', appointments.length)
-      if(appointments.length === 0) {
-        throw new NotFoundException('Not found appointments for this date');
-      }
-      const response: IAppointment[] = appointments.map((appointment) => ({
-        appointmentId: appointment.appointmentId,
-        date: appointment.date,
-        status: appointment.status,
-        planServiceId: appointment.plan_serviceId,
-        nurse: appointment.nurse,
-      }));
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        date: findByDateDto.date,
+        status: 'pending',
+        plan_serviceId: planServiceId,
+      },
+      relations: ['nurse', 'plan_service'],
+    });
+    console.log(appointments, 'fin by date');
+    console.log('cita', appointments.length);
+    if (appointments.length === 0) {
+      throw new NotFoundException('Not found appointments for this date');
+    }
+    const response: IAppointment[] = appointments.map((appointment) => ({
+      appointmentId: appointment.appointmentId,
+      date: appointment.date,
+      status: appointment.status,
+      planServiceId: appointment.plan_serviceId,
+      nurse: appointment.nurse,
+    }));
 
-      return response;
+    return response;
   }
 
   //cambiar se necesita un body
   public async createAppointmentPatient(
-    createPatientAppointmentDto: CreatePatientAppointmentDto
+    createPatientAppointmentDto: CreatePatientAppointmentDto,
   ) {
     const patientId = createPatientAppointmentDto.patientId;
-    console.log('id???',patientId)
+    console.log('id???', patientId);
     const selectedAppointmentId = createPatientAppointmentDto.appointmentId;
-    console.log(selectedAppointmentId,'id servicio')
-      const patient = await this.userRepository.findOne({
-        where: { userId: patientId},
-      });
-      
-      console.log('usuario final porfis', patient)
-      if (!patient) {
-        throw new NotFoundException(`Patient not found with Id ${patientId}`);
-      }
-  
-      const appointment = await this.appointmentRepository.findOne({
-        where: { appointmentId: selectedAppointmentId },
-        relations: ['patient', 'nurse', 'plan_service'],
-      });
-      const date = appointment.date;
-      if (!appointment) {
-        throw new NotFoundException('Selected appointment not found');
-      }
-  
-      if (appointment.status !== 'pending') {
-        throw new ConflictException('Appointment is not pending');
-      }
-      console.log('fecha',date);
-      //this.validateDate(date)
-      appointment.patientId = patientId;
-      appointment.status = 'confirmed'; // Cambia "status.CONFIMED" a "confirmed"
-      console.log('usuario',patient)
-      try {
+    console.log(selectedAppointmentId, 'id servicio');
+    const patient = await this.userRepository.findOne({
+      where: { userId: patientId },
+    });
+
+    console.log('usuario final porfis', patient);
+    if (!patient) {
+      throw new NotFoundException(`Patient not found with Id ${patientId}`);
+    }
+
+    const appointment = await this.appointmentRepository.findOne({
+      where: { appointmentId: selectedAppointmentId },
+      relations: ['patient', 'nurse', 'plan_service'],
+    });
+    const date = appointment.date;
+    if (!appointment) {
+      throw new NotFoundException('Selected appointment not found');
+    }
+
+    if (appointment.status !== 'pending') {
+      throw new ConflictException('Appointment is not pending');
+    }
+    console.log('fecha', date);
+    //this.validateDate(date)
+    appointment.patientId = patientId;
+    appointment.status = 'confirmed'; // Cambia "status.CONFIMED" a "confirmed"
+    console.log('usuario', patient);
+    try {
       const result = await this.appointmentRepository.save(appointment);
-  
+
       console.log('result?', result);
-  
+
       return result;
     } catch (e) {
       throw new ConflictException('Error creating appointment', e.message);
@@ -180,18 +178,19 @@ export class AppointmentService {
       skip: offset,
       relations: ['nurse', 'patient', 'plan_service'],
     };
-  
+
     if (userId) {
       findOptions.where = [
         { patient: { userId: userId } },
         { nurseId: userId },
       ];
     }
-  
-    const [contacts, count] = await this.appointmentRepository.findAndCount(findOptions);
+
+    const [contacts, count] =
+      await this.appointmentRepository.findAndCount(findOptions);
     return [contacts, count];
-  }  
-  
+  }
+
   public async findOne(appointmentId: number) {
     const appointment = await this.appointmentRepository.findOne({
       where: { appointmentId: appointmentId },
@@ -206,7 +205,7 @@ export class AppointmentService {
   }
 
   @Cron(CronExpression.EVERY_10_SECONDS)
-  async expiredFreeSpin(){
+  async expiredFreeSpin() {
     const newDate = new Date();
     newDate.setHours(-4, 0, 0);
     const findAppointment = await this.appointmentRepository.find({
@@ -216,8 +215,12 @@ export class AppointmentService {
     });
     if (findAppointment) {
       for (const appointment of findAppointment) {
-        if (appointment.date < newDate) {
+        if(appointment.status === 'pending' && appointment.date > newDate){
           appointment.status = 'expired';
+          await this.appointmentRepository.save(appointment);
+        }
+        if (appointment.status === 'confirmed' && appointment.date > newDate) {
+          appointment.status = 'finished';
           await this.appointmentRepository.save(appointment);
         }
       }
@@ -225,5 +228,20 @@ export class AppointmentService {
       throw new NotFoundException('Appointment not found');
     }
   }
-}
 
+  public async cancelAppointment(updateAppointmentDto: UpdateAppointmentDto) {
+    const appointmentId = updateAppointmentDto.appointmentId;
+    const findById = await this.appointmentRepository.findOne({
+      where: {
+        appointmentId: appointmentId,
+      },
+    });
+    if(!findById){
+      throw new NotFoundException('Appointment not found')
+    }
+    await this.appointmentRepository.preload({
+      appointmentId,
+      status: status.CANCELLED,
+    })
+  }
+}

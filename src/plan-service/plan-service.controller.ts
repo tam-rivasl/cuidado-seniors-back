@@ -23,17 +23,12 @@ export class PlanServiceController {
   }
 
   @Get(':planServiceId')
-  findOne(@Param('planServiceId', ParseIntPipe) planServiceId: number) {
+  async findOne(@Param('planServiceId', ParseIntPipe) planServiceId: number) {
     return this.planServiceService.findOne(planServiceId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlanServiceDto: UpdatePlanServiceDto) {
-    return this.planServiceService.update(+id, updatePlanServiceDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.planServiceService.remove(+id);
+  @Patch(':updateStatus')
+  async updateStatus( @Body() updatePlanServiceDto: UpdatePlanServiceDto) {
+    return this.planServiceService.updateStatus(updatePlanServiceDto);
   }
 }

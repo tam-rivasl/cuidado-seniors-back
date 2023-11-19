@@ -44,8 +44,8 @@ export class EmergencyContactService {
   }
   public async createContactPatient(
     patientContactDto: PatientContactDto,
-    userId: number,
   ) {
+    const userId= patientContactDto.patientId;
     const contact = await this.createEmergencyContact(
       patientContactDto.contact,
     );

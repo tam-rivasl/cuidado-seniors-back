@@ -1,25 +1,7 @@
-import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsOptional } from 'class-validator';
-
-export enum status {
-  CONFIRMED = 'confirmed',
-  CANCELLED = 'cancelled',
-  FINISHED = 'finished',
-  PENDING = 'pending',
-  EXPIRED = 'expired',
-}
+import {  IsNumber } from 'class-validator';
 
 export class UpdateAppointmentDto {
-  @Type(() => String)
-  @IsEnum(status, {
-    each: true,
-    message:
-      'missing params status: [confirmed,cancelled,finished,pending,expired]',
-  })
-  @IsOptional()
-  status?: string;
+  @IsNumber()
+  appointmentId: number;
 
-  @IsDate()
-  @IsOptional()
-  date?: Date;
 }

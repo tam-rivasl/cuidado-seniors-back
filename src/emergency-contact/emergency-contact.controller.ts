@@ -19,14 +19,12 @@ export class EmergencyContactController {
     private readonly emergencyContactService: EmergencyContactService,
   ) {}
 
-  @Post(':pacientId/create')
+  @Post('create')
   async create(
-    @Param('pacientId', ParseIntPipe) patientId: number,
     @Body() patientContactDto: PatientContactDto,
   ) {
     return this.emergencyContactService.createContactPatient(
       patientContactDto,
-      patientId,
     );
   }
 

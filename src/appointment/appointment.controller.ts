@@ -15,6 +15,7 @@ import { PaginationQueryDto } from 'src/common/paginationQueryDto';
 import { Appointment } from './entities/appointment.entity';
 import { CreatePatientAppointmentDto } from './dto/createPatientAppointment.dto';
 import { FindByDateDto } from './dto/findByDateDto.dto';
+import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -54,6 +55,12 @@ export class AppointmentController {
   @Post('/byDate')
   findAppointmentByDate(@Body() findByDateDto: FindByDateDto) {
     return this.appointmentService.findAppointmentByDate(findByDateDto);
+  }
+
+  
+  @Patch('/update')
+  cancelAppointment(@Body() updateAppointment: UpdateAppointmentDto) {
+    return this.appointmentService.cancelAppointment(updateAppointment);
   }
     
 }

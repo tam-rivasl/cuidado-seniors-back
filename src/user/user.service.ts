@@ -10,7 +10,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { PaginationQueryDto } from 'src/common/paginationQueryDto';
@@ -83,7 +83,7 @@ export class UserService {
     // regex clean .
 
     await this.findDocumentNumber(createUserDto.identificationNumber);
-    await  this.validateEmail(createUserDto.email.toLocaleLowerCase());
+    await this.validateEmail(createUserDto.email.toLocaleLowerCase());
     const pass = await this.encodePassword(createUserDto.password);
     const user = this.userRepository.create({
       firstName: createUserDto.firstName,
@@ -97,9 +97,9 @@ export class UserService {
       gender: createUserDto.gender,
       address: createUserDto.adress,
       status: status.ACTIVE,
-      rol:{
-        rolId: createUserDto.rolId
-      }
+      rol: {
+        rolId: createUserDto.rolId,
+      },
     });
 
     console.log('user', user);
@@ -130,7 +130,10 @@ export class UserService {
     const { email, password } = loginDto;
 
     // Busca al usuario por su dirección de correo electrónico
-    const user = await this.userRepository.findOne({ where: { email }, relations: ['rol'] });
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['rol'],
+    });
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -152,7 +155,14 @@ export class UserService {
     }
 
     // Genera un token JWT para el usuario al iniciar sesión correctamente
-    const payload = { rolId: user.rol.rolId, email: user.email, userId: user.userId, rolName: user.rol.rolName, firstName: user.firstName, lastName: user.lastName };
+    const payload = {
+      rolId: user.rol.rolId,
+      email: user.email,
+      userId: user.userId,
+      rolName: user.rol.rolName,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
 
     return payload;
   }
@@ -174,7 +184,7 @@ export class UserService {
   public async findAllNurses(paginationQueryDto: PaginationQueryDto<User>) {
     const { limit, offset } = paginationQueryDto;
     const findAllUser = await this.userRepository.find({
-      where: {rol: {rolName: 'nurse'}},
+      where: { rol: { rolName: 'nurse' } },
       take: limit,
       skip: offset,
       relations: ['rol'],
@@ -257,4 +267,17 @@ export class UserService {
   return
   }
   */
+  public async updateStatus(updateUserDto: UpdateUserDto) {
+    const userId = updateUserDto.userId
+    const user = await this.userRepository.findOne({
+      where: { userId: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.userRepository.preload({
+      userId: userId,
+      status: status.INACTIVE,
+    });
+  }
 }

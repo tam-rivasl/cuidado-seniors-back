@@ -2,7 +2,7 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { CreatePlanServiceDto } from './dto/create-plan-service.dto';
 import { UpdatePlanServiceDto } from './dto/update-plan-service.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PlanService } from './entities/planService.entity';
+import { PlanService, status } from './entities/planService.entity';
 import { Repository } from 'typeorm';
 import { PaginationQueryDto } from '../common/paginationQueryDto';
 
@@ -50,11 +50,21 @@ export class PlanServiceService {
     }
   }
 // TODO: VER DESPUES ESTO
-  update(id: number, updatePlanServiceDto: UpdatePlanServiceDto) {
-    return `This action updates a #${id} planService`;
+  
+public async updateStatus(updatePlanServiceDto: UpdatePlanServiceDto) {
+  const planServiceId = updatePlanServiceDto.planServiceId;
+  const plan = await this.planserviceRepository.findOne({
+    where: {
+      plan_serviceId: planServiceId,
+    },
+  });
+  if(!plan){
+    throw new NotFoundException('Plan Service not found')
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} planService`;
-  }
+  await this.planserviceRepository.preload({
+    plan_serviceId: planServiceId,
+    status: status.INACTIVE,
+  })
+}
+ 
 }

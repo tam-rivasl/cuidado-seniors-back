@@ -57,4 +57,8 @@ export class UpdateUserDto {
   @IsEnum(userStatus)
   @IsOptional()
   status?: string;
+
+  @IsNumber()
+  @IsOptional()
+  userId?: number;
 }

@@ -34,6 +34,10 @@ import { PaymentService } from './payment/payment.service';
 import { Payment } from './payment/entities/payment.entity';
 import { PlanService } from './plan-service/entities/planService.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { WebPayModule } from './webpay/webpay.module';
+import { WebPayController } from './webpay/webpay.controller';
+import { WebPayService } from './webpay/webpay.service';
+import { WebPayTransaction } from './webpay/entities/webpay.entitie';
 
 @Module({
   imports: [
@@ -46,6 +50,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     Appointment,
     EmergencyContactModule,
     MedicalRecordModule,
+    WebPayModule,
 
     TypeOrmModule.forFeature([
       EmergencyContact,
@@ -59,6 +64,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       PaymentHistory,
       Payment,
       PlanService,
+      WebPayTransaction,
     ]),
     TypeOrmModule.forRoot({
       type: 'postgres', // type of our database
@@ -80,6 +86,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     PaymentController,
     PaymentHistoryController,
     PlanServiceController,
+    WebPayController,
   ],
   providers: [
     UserService,
@@ -89,7 +96,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     ObservationService,
     PaymentHistoryService,
     PaymentService,
-    PlanServiceService
+    PlanServiceService,
+    WebPayService,
   ],
 })
 export class AppModule {}
