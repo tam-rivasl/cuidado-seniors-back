@@ -4,9 +4,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsString,
 } from 'class-validator';
-import { User } from 'src/user/entities/user.entity';
 export enum status {
   CONFIMED = 'confirmed',
   CANCELLED = 'cancelled',

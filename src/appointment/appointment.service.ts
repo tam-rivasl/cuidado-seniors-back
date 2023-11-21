@@ -1,10 +1,10 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Appointment } from './entities/appointment.entity';
 import { In, Repository } from 'typeorm';
@@ -36,7 +36,9 @@ export class AppointmentService {
 
   async validateDate(date: Date) {
     const newDate = new Date();
-    newDate.setHours(-4, 0, 0);
+    //newDate.setHours(-4, 0, 0);
+    console.log('fecha', date)
+    console.log(newDate, 'new date')
     if (date < newDate) {
       throw new ConflictException('Not valid date for this appointment');
     }
@@ -215,7 +217,7 @@ export class AppointmentService {
     });
     if (findAppointment) {
       for (const appointment of findAppointment) {
-        if(appointment.status === 'pending' && appointment.date > newDate){
+        if (appointment.status === 'pending' && appointment.date > newDate) {
           appointment.status = 'expired';
           await this.appointmentRepository.save(appointment);
         }
@@ -229,19 +231,51 @@ export class AppointmentService {
     }
   }
 
-  public async cancelAppointment(updateAppointmentDto: UpdateAppointmentDto) {
-    const appointmentId = updateAppointmentDto.appointmentId;
-    const findById = await this.appointmentRepository.findOne({
-      where: {
-        appointmentId: appointmentId,
-      },
-    });
-    if(!findById){
-      throw new NotFoundException('Appointment not found')
+  public async cancelAppointment(appointmentId: number) {
+    try {
+      console.log('flag1');
+      // const appointmentId = updateAppointmentDto.appointmentId;
+
+      if (!appointmentId) {
+        console.error('Invalid appointmentId:', appointmentId);
+        throw new BadRequestException('Invalid appointmentId');
+      }
+
+      console.log('flag1.1'); // Agrega logs adicionales
+      const appointment = await this.appointmentRepository.findOne({
+        where: {
+          appointmentId: appointmentId,
+        },
+      });
+
+      console.log('find', appointment);
+      console.log('flag2');
+
+      if (!appointment) {
+        throw new NotFoundException('Appointment not found');
+      }
+
+      console.log('flag3');
+
+      if (
+        appointment.status === 'cancelled' ||
+        appointment.status === 'expired'
+      ) {
+        console.log('flag 5');
+        throw new ConflictException(
+          'Appointment is already cancelled or expired',
+        );
+      } else {
+        const save = await this.appointmentRepository.save({
+          ...appointment,
+          status: status.CANCELLED,
+        });
+        console.log('flag5', save);
+        return save;
+      }
+    } catch (error) {
+      console.error('Error in cancelAppointment:', error);
+      throw error;
     }
-    await this.appointmentRepository.preload({
-      appointmentId,
-      status: status.CANCELLED,
-    })
   }
 }

@@ -6,8 +6,6 @@ import {
   IsNumber,
   IsOptional,
 } from 'class-validator';
-import { PlanService } from 'src/plan-service/entities/planService.entity';
-import { User } from 'src/user/entities/user.entity';
 export enum status {
   CONFIMED = 'confirmed',
   CANCELLED = 'cancelled',

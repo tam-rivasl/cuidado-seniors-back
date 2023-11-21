@@ -15,7 +15,6 @@ import { PaginationQueryDto } from 'src/common/paginationQueryDto';
 import { Appointment } from './entities/appointment.entity';
 import { CreatePatientAppointmentDto } from './dto/createPatientAppointment.dto';
 import { FindByDateDto } from './dto/findByDateDto.dto';
-import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -48,19 +47,18 @@ export class AppointmentController {
 
 
   @Get(':appointmentId')
-  findOne(@Param('appointmentId', ParseIntPipe) appointmentId: number) {
+  async findOne(@Param('appointmentId', ParseIntPipe) appointmentId: number) {
     return this.appointmentService.findOne(appointmentId);
   }
 
   @Post('/byDate')
-  findAppointmentByDate(@Body() findByDateDto: FindByDateDto) {
+  async  findAppointmentByDate(@Body() findByDateDto: FindByDateDto) {
     return this.appointmentService.findAppointmentByDate(findByDateDto);
   }
 
   
-  @Patch('/update')
-  cancelAppointment(@Body() updateAppointment: UpdateAppointmentDto) {
-    return this.appointmentService.cancelAppointment(updateAppointment);
+  @Patch('/cancel')
+  async cancelAppointment(@Body( 'appointmentId', ParseIntPipe) appointmentId: number) {
+    return this.appointmentService.cancelAppointment(appointmentId);
   }
-    
 }
