@@ -8,26 +8,17 @@ import { PaginationQueryDto } from 'src/common/paginationQueryDto';
 export class ObservationController {
   constructor(private readonly observationService: ObservationService) {}
 
-  @Post('patientId/:patientId')
+  @Post('create/observation')
   async createObservationPatient(
-    @Param('patientId', ParseIntPipe) patientId: number,
     @Body() observationDto: ObservationDto
     ) {
-    return this.observationService.createObservationPatient(observationDto, patientId);
+    return this.observationService.createObservationPatient(observationDto);
   }
-  @Post('nurseId/:nurseId/patientId/:patientId')
-  async createObservationNurse(
-    @Param('nurseId', ParseIntPipe) nurseId: number,
-    @Param('patientId', ParseIntPipe) patientId: number,
-    @Body() observationDto: ObservationDto
-    ) {
-    return this.observationService.createObservationNurse(observationDto, nurseId, patientId);
-  }
-  @Get('patientId/:patientId')
+  @Get('appointmentId/:appointmentId')
   findByPatientId(
-    @Param('patientId', ParseIntPipe) patientId: number,
+    @Param('appointmentId', ParseIntPipe) appointmentId: number,
     @Query() paginationQueryDto: PaginationQueryDto<Observation>
   ) {
-    return this.observationService.findByPatientId(patientId, paginationQueryDto);
+    return this.observationService.findByAppointmentId(appointmentId, paginationQueryDto);
   }
 }

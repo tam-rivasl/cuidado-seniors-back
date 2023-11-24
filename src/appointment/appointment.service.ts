@@ -15,7 +15,7 @@ import { CreatePatientAppointmentDto } from './dto/createPatientAppointment.dto'
 import { IAppointment } from './interfaces/appointment.interface';
 import { FindByDateDto } from './dto/findByDateDto.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { stat } from 'fs';
+import moment from 'moment';
 export enum status {
   CONFIMED = 'confirmed',
   CANCELLED = 'cancelled',
@@ -36,11 +36,12 @@ export class AppointmentService {
 
   async validateDate(date: Date) {
     const newDate = new Date();
-    //newDate.setHours(-4, 0, 0);
+    newDate.setHours(-4, 0, 0);
     console.log('fecha', date)
     console.log(newDate, 'new date')
     if (date < newDate) {
-      throw new ConflictException('Not valid date for this appointment');
+      console.log('se cae aqui')
+      throw new ConflictException('Fecha invalida, porfavor ingrese una fecha mayor a la de hoy');
     }
   }
   //crear planes de servicio y login primero antes de terminar esto.
@@ -64,7 +65,7 @@ export class AppointmentService {
     }
     const date = createAppointmentDto.date;
     console.log('fecha', date);
-    this.validateDate(date);
+    await this.validateDate(date);
     const findDate = await this.appointmentRepository.find({
       where: {
         date: date,
@@ -76,7 +77,8 @@ export class AppointmentService {
     console.log('nurseee', nurse);
     console.log('find date', findDate);
     if (findDate.length) {
-      throw new ConflictException('Date already taken for this appointment');
+      console.log('tiene mas de una fecha ')
+      throw new ConflictException('Ya tiene una cita agendada para esta fecha');
     }
     console.log('first flag');
     const appointment: CreateAppointmentDto = {
@@ -159,7 +161,7 @@ export class AppointmentService {
       throw new ConflictException('Appointment is not pending');
     }
     console.log('fecha', date);
-    //this.validateDate(date)
+    await this.validateDate(date)
     appointment.patientId = patientId;
     appointment.status = 'confirmed'; // Cambia "status.CONFIMED" a "confirmed"
     console.log('usuario', patient);
@@ -217,11 +219,11 @@ export class AppointmentService {
     });
     if (findAppointment) {
       for (const appointment of findAppointment) {
-        if (appointment.status === 'pending' && appointment.date > newDate) {
+        if (appointment.status === 'pending' && appointment.date < newDate) {
           appointment.status = 'expired';
           await this.appointmentRepository.save(appointment);
         }
-        if (appointment.status === 'confirmed' && appointment.date > newDate) {
+        if (appointment.status === 'confirmed' && appointment.date < newDate) {
           appointment.status = 'finished';
           await this.appointmentRepository.save(appointment);
         }

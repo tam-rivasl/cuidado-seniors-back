@@ -3,10 +3,10 @@ import { ObservationService } from './observation.service';
 import { ObservationController } from './observation.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Observation } from './entities/observation.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Appointment } from 'src/appointment/entities/appointment.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Observation, User])],
+  imports: [TypeOrmModule.forFeature([Observation, Appointment])],
   controllers: [ObservationController],
   providers: [ObservationService],
 })

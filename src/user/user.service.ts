@@ -202,6 +202,8 @@ export class UserService {
       where: { userId: userId },
       relations: ['rol', 'emergency_contactId'],
     });
+
+    console.log(findUser, 'usuario encontrado con emergency??')
     if (!findUser) {
       throw new NotFoundException(`Not found user: ${userId}`);
     } else {

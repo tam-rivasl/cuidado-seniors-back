@@ -41,6 +41,18 @@ export class Observation {
   })
   observationType: string;
 
+  @Column({
+    name: 'appointmentId',
+    nullable: false,
+  })
+  appointmentId: number;
+
+  @Column({
+    name: 'nurseId',
+    nullable: false,
+  })
+  nurseId: number;
+
   @CreateDateColumn()
   createdDate: Date;
 
@@ -50,6 +62,7 @@ export class Observation {
   @DeleteDateColumn()
   deletedDate: Date;
 
+  //Arreglar join para appointment??
   @ManyToOne(() => User, (patient) => patient.patient_observation)
   @JoinColumn({ name: 'patientId' })
   patient: User;

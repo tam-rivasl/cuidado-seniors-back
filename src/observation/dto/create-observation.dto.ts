@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsString, IsEnum, IsNumber, IsOptional } from 'class-validator';
-import { User } from '../../user/entities/user.entity';
 import { observationType, status } from '../entities/observation.entity';
 import { CreateDateColumn } from 'typeorm/decorator/columns/CreateDateColumn';
 import { UpdateDateColumn, DeleteDateColumn } from 'typeorm';
@@ -34,9 +33,9 @@ export class ObservationDto {
  
   @IsNumber()
   @IsNotEmpty()
-  patient: number;
+  appointmentId: number;
   
   @IsNumber()
   @IsOptional()
-  nurse: number;
+  nurseId: number;
 }
