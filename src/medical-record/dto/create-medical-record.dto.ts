@@ -1,15 +1,12 @@
-import { Type } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
-export enum status {
+import { Type } from 'class-transformer';
+
+export enum Status {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
 }
-export class CreateMedicalRecordDto {
-  @IsNumber()
-  @IsNotEmpty()
-  medical_recordId: number;
 
+export class CreateMedicalRecordDto {
   @IsNumber()
   @IsNotEmpty()
   patientId: number;
@@ -19,23 +16,15 @@ export class CreateMedicalRecordDto {
   fileName: string;
 
   @Type(() => String)
-  @IsEnum(status)
+  @IsEnum(Status)
   @IsNotEmpty({ message: 'Status is required' })
   status: string;
 
   @IsNotEmpty()
   file: Buffer;
-
+/*
   @IsString()
   @IsNotEmpty()
   mimetype: string;
-
-  @CreateDateColumn()
-  createdDate: Date;
-
-  @UpdateDateColumn()
-  updatedDate: Date;
-
-  @DeleteDateColumn()
-  deletedDate: Date;
+  */
 }

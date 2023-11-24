@@ -20,19 +20,15 @@ export class MedicalRecord {
   medical_recordId: number;
   @Column({ name: 'name', nullable: false })
   fileName: string;
-  @Column({
-    name: 'status',
-    nullable: false,
-    type: 'enum',
-    enum: status,
-  })
-  status: string;
   //almacena el archivo
   @Column({ type: 'bytea', nullable: false })
   file: Buffer;
   //tipo de archivo, ej: png, pdf etc.
-  @Column({ type: 'varchar', length: 100, nullable: false })
-  mimetype: string;
+  /*
+ @Column({ type: 'varchar', length: 100, nullable: false })
+  mimetype: string;*/
+  @Column({ name: 'patientId', nullable: false })
+  patientId: number;
   @CreateDateColumn()
   createdDate: Date;
 
