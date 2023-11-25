@@ -9,24 +9,21 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-export enum status {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-}
 
 @Entity()
 export class MedicalRecord {
   @PrimaryGeneratedColumn()
   medical_recordId: number;
-  @Column({ name: 'name', nullable: false })
-  fileName: string;
-  //almacena el archivo
-  @Column({ type: 'bytea', nullable: false })
-  file: Buffer;
-  //tipo de archivo, ej: png, pdf etc.
-  /*
- @Column({ type: 'varchar', length: 100, nullable: false })
-  mimetype: string;*/
+  @Column({ name: 'alergias', nullable: false })
+  alergias: string;
+  @Column({ name: 'medicamentos', nullable: false })
+  medicamentos: string;
+  @Column({ name: 'dosisMedicamentos', nullable: false })
+  dosisMedicamentos: string;
+  @Column({ name: 'tipoEnfermedad', nullable: false })
+  tipoEnfermedad: string;
+  @Column({ name: 'descripcionPatologia', nullable: false })
+  descripcionPatologia: string;
   @Column({ name: 'patientId', nullable: false })
   patientId: number;
   @CreateDateColumn()

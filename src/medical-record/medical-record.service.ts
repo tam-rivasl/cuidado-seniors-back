@@ -15,31 +15,24 @@ export class MedicalRecordService {
 
  public async create(
     createMedicalRecordDto: CreateMedicalRecordDto,
-    file: Express.Multer.File,
   ) {
+    const patientId = createMedicalRecordDto.patientId;
     console.log('flag1')
-    if (!file) {
-      throw new NotFoundException('Error, no existe archivo para subir');
+    if (!patientId) {
+      throw new NotFoundException('Error, usuario no encontrado');
     }
     console.log('flag2')
-    if(!createMedicalRecordDto.patientId){
-      throw new NotFoundException('Error, usuario no encontrado')
-    }
-    const dataFile = {
-      fileName: file.originalname,
+
+    const data = {
+      alergias: createMedicalRecordDto.alergias,
+      medicamentos: createMedicalRecordDto.medicamentos,
+      dosisMedicamentos: createMedicalRecordDto.dosisMedicamentos,
+      tipoEnfermedad: createMedicalRecordDto.tipoEnfermedad,
       patientId: createMedicalRecordDto.patientId,
-      status: 'active',
-      file: file.buffer,
-    };
-    console.log('flag3', dataFile)
-    const req: CreateMedicalRecordDto = {
-      fileName: dataFile.fileName,
-      patientId: dataFile.patientId,
-      status: dataFile.status,
-      file: dataFile.file,
+      descripcionPatologia: createMedicalRecordDto.descripcionPatologia
     }
-    console.log(dataFile, 'data archivo')
-    const medicalRecord = this.medicalRecordRepository.create(req);
+    console.log(data, 'data archivo')
+    const medicalRecord = this.medicalRecordRepository.create(data);
     try {
       const result = await this.medicalRecordRepository.save(medicalRecord);
       console.log('flag5', result)
@@ -58,20 +51,11 @@ export class MedicalRecordService {
     const medicalRecord = await this.medicalRecordRepository.findOne({
       where: { patientId: patientId },
     });
+    console.log(medicalRecord,'medical record')
     if (!medicalRecord) {
-      throw new NotFoundException(`Medical record with ID ${medicalRecord.medical_recordId} not found`);
+      console.log('se cae aca ')
+      throw new NotFoundException(`No se encontro Ficha medica con ID ${medicalRecord.medical_recordId}`);
     }
     return medicalRecord;
   }
-/*
- public async update(id: number, updateMedicalRecordDto: UpdateMedicalRecordDto) {
-    const medicalRecord = await this.findOne(id);
-    this.medicalRecordRepository.merge(medicalRecord, updateMedicalRecordDto);
-    return this.medicalRecordRepository.save(medicalRecord);
-  }
-
- public async remove(id: number) {
-    const medicalRecord = await this.findOne(id);
-    return this.medicalRecordRepository.remove(medicalRecord);
-  }*/
 }

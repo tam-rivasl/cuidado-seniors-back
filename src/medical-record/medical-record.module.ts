@@ -7,9 +7,7 @@ import { MedicalRecordService } from './medical-record.service';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MedicalRecord]), MulterModule.register({
-    dest: './medical-record/img'
-  })],
+  imports: [TypeOrmModule.forFeature([MedicalRecord])],
   controllers: [MedicalRecordController],
   providers: [MedicalRecordService],
 })

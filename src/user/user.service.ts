@@ -200,7 +200,7 @@ export class UserService {
   public async findOne(userId: number) {
     const findUser = await this.userRepository.findOne({
       where: { userId: userId },
-      relations: ['rol', 'emergency_contactId'],
+      relations: ['rol', 'emergency_contactId', 'patient_medicalRecord'],
     });
 
     console.log(findUser, 'usuario encontrado con emergency??')
