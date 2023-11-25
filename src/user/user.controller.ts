@@ -59,10 +59,10 @@ export class UserController {
     return this.userService.updateUser(userId, updateUserDto);
   }
 
-  @Patch('update/status')
+  @Patch('update/status/:userId')
   async updateStatus(
-    @Body() updateUserDto: UpdateUserDto,
+    @Param('userId', ParseIntPipe) userId: number,
   ) {
-    return this.userService.updateStatus(updateUserDto);
+    return this.userService.updateStatus(userId);
   }
 }

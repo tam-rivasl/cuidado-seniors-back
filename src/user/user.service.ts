@@ -33,7 +33,7 @@ export class UserService {
       where: { email: email },
     });
     if (result) {
-      throw new BadRequestException(`User email exists ${email}`);
+      throw new BadRequestException(`Email ya se encuentra registrado ${email}`);
     }
   }
   //Funcion que elimina la contraseña del usuari si este ya esta registrado con el rut
@@ -76,7 +76,7 @@ export class UserService {
       console.log('result rol:', save);
       return save;
     } catch (e) {
-      throw new ConflictException(e.message, 'Error to create rol');
+      throw new ConflictException(e.message, 'Error al crear  rol usuario');
     }
   }
   public async userCreate(createUserDto: CreateUserDto): Promise<ICreateUser> {
@@ -122,7 +122,8 @@ export class UserService {
       };
       return result;
     } catch (e) {
-      throw new ConflictException(e.message, 'Error to create user');
+      console.log('error')
+      throw new ConflictException(e.message, 'Error al crear Usuario');
     }
   }
 
@@ -251,35 +252,23 @@ export class UserService {
     }
   }
 
-  //Agregar al controller!!
-  /* public async emergencyContact(createEmergencyContactDto: CreateEmergencyContactDto, userId: number): Promise<User>{
-    const user = await this.findOne(userId)
-
-    if(user){
-      const createContact: CreateEmergencyContactDto ={
-          patientId: userId,
-          firstName: createEmergencyContactDto.firstName,
-          lastName: createEmergencyContactDto.lastName,
-          email: createEmergencyContactDto.email,
-          phoneNumber: createEmergencyContactDto.phoneNumber,
-          relationship: createEmergencyContactDto.relationship,
-          status: createEmergencyContactDto.status,
-        };
-      }
-  return
-  }
-  */
-  public async updateStatus(updateUserDto: UpdateUserDto) {
-    const userId = updateUserDto.userId
+  public async updateStatus(userId: number) {
     const user = await this.userRepository.findOne({
       where: { userId: userId },
     });
+    console.log("user", user)
     if (!user) {
-      throw new NotFoundException('User not found');
+      console.log("flag2")
+      throw new NotFoundException('Usuario no encontrado');
     }
-    await this.userRepository.preload({
+    if(user.status === 'inactive'){
+      console.log("flag3")
+      throw new ConflictException('Usuario ya se encuentra desactivado')
+    }
+   const result = await this.userRepository.save({
       userId: userId,
       status: status.INACTIVE,
     });
+    return result
   }
 }

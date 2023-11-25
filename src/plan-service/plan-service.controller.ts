@@ -12,23 +12,28 @@ export class PlanServiceController {
   constructor(private readonly planServiceService: PlanServiceService) {}
 
   @Post()
-  async create(@Body() createPlanServiceDto: CreatePlanServiceDto) {
+ public async create(@Body() createPlanServiceDto: CreatePlanServiceDto) {
     return this.planServiceService.create(createPlanServiceDto);
   }
 
   @Get()
-  async findAll(
+ public async findAll(
     @Query() paginationQueryDto: PaginationQueryDto<PlanService>) {
     return this.planServiceService.findAll(paginationQueryDto);
   }
 
   @Get(':planServiceId')
-  async findOne(@Param('planServiceId', ParseIntPipe) planServiceId: number) {
+  public async findOne(@Param('planServiceId', ParseIntPipe) planServiceId: number) {
     return this.planServiceService.findOne(planServiceId);
   }
 
-  @Patch(':updateStatus')
-  async updateStatus( @Body() updatePlanServiceDto: UpdatePlanServiceDto) {
-    return this.planServiceService.updateStatus(updatePlanServiceDto);
+  @Patch('inactive/:planServiceId')
+ public async inactivePlan( @Param('planServiceId', ParseIntPipe) planServiceId: number) {
+    return this.planServiceService.inactivePlan(planServiceId);
   }
+
+  @Patch('active/:planServiceId')
+  public async activePlan( @Param('planServiceId', ParseIntPipe) planServiceId: number) {
+     return this.planServiceService.activePlan(planServiceId);
+   }
 }

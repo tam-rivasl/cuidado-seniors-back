@@ -54,7 +54,9 @@ export class AppointmentService {
       where: { userId: nurseId },
     });
     const plan = await this.planserviceRespository.findOne({
-      where: { plan_serviceId: planServiceId },
+      where: { 
+        plan_serviceId: planServiceId,
+      },
     });
     console.log('existe el plan?', plan);
     console.log('usuario existe?', nurse);
@@ -62,6 +64,11 @@ export class AppointmentService {
       throw new NotFoundException(
         `User not found with ID ${nurseId} or Plan service not found ${planServiceId} `,
       );
+    }
+    console.log('status', plan.status)
+    if(plan.status === 'inactive'){
+      console.log('deberia entrar aqui');
+      throw new ConflictException('Lo sentimos, este plan esta desactivado');
     }
     const date = createAppointmentDto.date;
     console.log('fecha', date);

@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePlanServiceDto } from './dto/create-plan-service.dto';
 import { UpdatePlanServiceDto } from './dto/update-plan-service.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,9 +14,9 @@ import { PaginationQueryDto } from '../common/paginationQueryDto';
 export class PlanServiceService {
   constructor(
     @InjectRepository(PlanService)
-    private readonly planserviceRepository: Repository<PlanService>
-  ){}
- public async create(createPlanServiceDto: CreatePlanServiceDto) {
+    private readonly planserviceRepository: Repository<PlanService>,
+  ) {}
+  public async create(createPlanServiceDto: CreatePlanServiceDto) {
     const plan: CreatePlanServiceDto = {
       planServiceName: createPlanServiceDto.planServiceName,
       price: createPlanServiceDto.price,
@@ -21,50 +25,84 @@ export class PlanServiceService {
       endTime: createPlanServiceDto.endTime,
       status: createPlanServiceDto.status,
     };
-     this.planserviceRepository.create(plan);
-    try{
-    const result =  await this.planserviceRepository.save(plan);
-    return result;
-    }catch(e){
-      throw new ConflictException('error to create plan service', e.message)
+    this.planserviceRepository.create(plan);
+    try {
+      const result = await this.planserviceRepository.save(plan);
+      return result;
+    } catch (e) {
+      throw new ConflictException('error to create plan service', e.message);
     }
   }
 
   async findAll(paginationQueryDto: PaginationQueryDto<PlanService>) {
-   try{
-    const { limit, offset } = paginationQueryDto;
-    const plan = await this.planserviceRepository.find({
-      take: limit,
-      skip: offset,
-    })
-    return plan
-  }catch(e){
-    throw new NotFoundException('Plan service not found', e.message)
-  }
+    try {
+      const { limit, offset } = paginationQueryDto;
+      const plan = await this.planserviceRepository.find({
+        take: limit,
+        skip: offset,
+      });
+      return plan;
+    } catch (e) {
+      throw new NotFoundException('Plan service not found', e.message);
+    }
   }
 
   async findOne(planserviceId: number) {
-     const plan = await this.planserviceRepository.findOne({where:{plan_serviceId: planserviceId}})
-    if(!plan){
+    const plan = await this.planserviceRepository.findOne({
+      where: { plan_serviceId: planserviceId },
+    });
+    if (!plan) {
       throw new NotFoundException('Plan service not found');
     }
+    return plan;
   }
-// TODO: VER DESPUES ESTO
-  
-public async updateStatus(updatePlanServiceDto: UpdatePlanServiceDto) {
-  const planServiceId = updatePlanServiceDto.planServiceId;
-  const plan = await this.planserviceRepository.findOne({
-    where: {
+  // TODO: VER DESPUES ESTO
+
+  public async inactivePlan(planServiceId: number) {
+    console.log('flagada');
+    const plan = await this.planserviceRepository.findOne({
+      where: {
+        plan_serviceId: planServiceId,
+      },
+    });
+    console.log('plan service', plan);
+    if (!plan) {
+      console.log('flag1');
+      throw new NotFoundException('Plan de servicio no encontrado');
+    }
+    if (plan.status === 'inactive') {
+      console.log('flag2');
+      throw new NotFoundException('Plan de servicio ya se encuentra inactivo');
+    }
+    const result = await this.planserviceRepository.save({
       plan_serviceId: planServiceId,
-    },
-  });
-  if(!plan){
-    throw new NotFoundException('Plan Service not found')
+      status: status.INACTIVE,
+    });
+    console.log('flag3', result);
+    return result;
   }
-  await this.planserviceRepository.preload({
-    plan_serviceId: planServiceId,
-    status: status.INACTIVE,
-  })
-}
- 
+
+  public async activePlan(planServiceId: number) {
+    console.log('flag1')
+    const plan = await this.planserviceRepository.findOne({
+      where: {
+        plan_serviceId: planServiceId,
+      },
+    });
+    console.log('flag2', plan);
+    if (!plan) {
+      console.log('flag3')
+      throw new NotFoundException('Plan de servicio no encontrado');
+    }
+    if (plan.status === 'active') {
+      console.log('flag4')
+      throw new NotFoundException('Plan de servicio ya se encuentra activo');
+    }
+    const result = await this.planserviceRepository.save({
+      plan_serviceId: planServiceId,
+      status: status.ACTIVE,
+    });
+    console.log('flag5', result)
+    return result;
+  }
 }
