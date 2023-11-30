@@ -21,38 +21,38 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('createRol')
-  async createRol(@Body() createRolDto: CreateRolDto) {
+  public async createRol(@Body() createRolDto: CreateRolDto) {
     return await this.userService.createRol(createRolDto);
   }
   @Post('create')
-  async register(@Body() createUserDto: CreateUserDto) {
+  public async register(@Body() createUserDto: CreateUserDto) {
     return await this.userService.userCreate(createUserDto);
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
+  public async login(@Body() loginDto: LoginDto) {
     return await this.userService.login(loginDto);
   }
 
 
   @Get('find/nurses')
-  async findAllNurses(@Query() paginationQueryDto: PaginationQueryDto<User>) {
+  public async findAllNurses(@Query() paginationQueryDto: PaginationQueryDto<User>) {
     return this.userService.findAllNurses(paginationQueryDto);
   }
 
   @Get()
-  async findAll(@Query() paginationQueryDto: PaginationQueryDto<User>) {
+  public async findAll(@Query() paginationQueryDto: PaginationQueryDto<User>) {
     return this.userService.findAll(paginationQueryDto);
   }
 
 
   @Get(':userId')
-  async findOne(@Param('userId', ParseIntPipe) userId: number) {
+  public async findOne(@Param('userId', ParseIntPipe) userId: number) {
     return this.userService.findOne(userId);
   }
 
   @Patch(':userId')
-  async update(
+  public async update(
     @Param('userId', ParseIntPipe) userId: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
@@ -60,7 +60,7 @@ export class UserController {
   }
 
   @Patch('update/status/:userId')
-  async updateStatus(
+  public async updateStatus(
     @Param('userId', ParseIntPipe) userId: number,
   ) {
     return this.userService.updateStatus(userId);

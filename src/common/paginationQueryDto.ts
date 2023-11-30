@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsDate, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class PaginationQueryDto<TData> {
   @IsOptional()
@@ -18,5 +18,25 @@ export class PaginationQueryDto<TData> {
   @IsNumber()
   userId: number;
 
+  @IsOptional()
+  @IsString()
+  status: string;
+
+  @IsOptional()
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  @IsString()
+  email: string;
+
+  @IsOptional()
+  @IsDate()
+  firstDate: Date;
+
+  @IsOptional()
+  @IsDate()
+  secondDate: Date;
+  
   results: TData[];
 }

@@ -7,7 +7,7 @@ import {
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Appointment } from './entities/appointment.entity';
-import { In, Repository } from 'typeorm';
+import { Between, In, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { PlanService } from 'src/plan-service/entities/planService.entity';
 import { PaginationQueryDto } from '../common/paginationQueryDto';
@@ -51,7 +51,7 @@ export class AppointmentService {
     const planServiceId = createAppointmentDto.plan_serviceId;
     // Verificar si existe el usuario (paciente)
     const nurse = await this.userRepository.findOne({
-      where: { userId: nurseId },
+      where: { userId: nurseId, status: 'active' },
     });
     const plan = await this.planserviceRespository.findOne({
       where: { 
@@ -60,9 +60,9 @@ export class AppointmentService {
     });
     console.log('existe el plan?', plan);
     console.log('usuario existe?', nurse);
-    if (!nurse && !plan) {
+    if (!nurse || !plan) {
       throw new NotFoundException(
-        `User not found with ID ${nurseId} or Plan service not found ${planServiceId} `,
+        `Usuario se encuentra inactivo con ID ${nurseId} o Plan de servicio se encuentra inactivo con ID ${planServiceId} `,
       );
     }
     console.log('status', plan.status)
@@ -83,7 +83,7 @@ export class AppointmentService {
     });
     console.log('nurseee', nurse);
     console.log('find date', findDate);
-    if (findDate.length) {
+    if (findDate.length && planServiceId === findDate[0].plan_serviceId) {
       console.log('tiene mas de una fecha ')
       throw new ConflictException('Ya tiene una cita agendada para esta fecha');
     }
@@ -183,22 +183,42 @@ export class AppointmentService {
     }
   }
   public async findAll(paginationQueryDto: PaginationQueryDto<Appointment>) {
-    const { limit, offset, userId } = paginationQueryDto;
+    const { limit, offset, userId, firstDate, secondDate, status } = paginationQueryDto;
+    console.log("flag")
     const findOptions: any = {
       take: limit,
       skip: offset,
       relations: ['nurse', 'patient', 'plan_service'],
     };
-
+    
+    console.log("first flag")
     if (userId) {
+      console.log("pasa?")
+      if (firstDate && secondDate ) {
+        console.log("pasa aqui")
+        findOptions.where = [
+          { patientId:  userId, date: Between(firstDate, secondDate)  },
+          { nurseId: userId, date: Between(firstDate, secondDate) },
+        ];
+      } else {
+        console.log("pasa sin fechas")
+        findOptions.where = [
+          { patient: { userId: userId } },
+          { nurseId: userId },
+        ];
+      }
+    }
+    
+    if(firstDate && secondDate && !userId){
+      console.log("pasa sin fechas")
       findOptions.where = [
-        { patient: { userId: userId } },
-        { nurseId: userId },
+       { date: Between(firstDate, secondDate)}
       ];
     }
-
-    const [contacts, count] =
-      await this.appointmentRepository.findAndCount(findOptions);
+    console.log("firstDate", firstDate, "secondDate", secondDate);
+    const find = await this.appointmentRepository.findAndCount(findOptions);
+    console.log(find, "el find ql")
+    const [contacts, count] = find
     return [contacts, count];
   }
 

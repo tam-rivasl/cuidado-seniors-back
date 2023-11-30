@@ -212,6 +212,7 @@ export class UserService {
     }
   }
 
+
   public async updateUser(userId: number, updateUserDto: UpdateUserDto) {
     let email;
     const findUser = await this.userRepository.findOne({
