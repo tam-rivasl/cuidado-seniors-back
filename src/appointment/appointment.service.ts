@@ -77,13 +77,13 @@ export class AppointmentService {
       where: {
         date: date,
         nurse: { userId: nurseId }, // Asumiendo que nurseId es el ID del enfermero
-        plan_service: { plan_serviceId: planServiceId }, // Asumiendo que plan.plan_serviceId es el ID del servicio de plan
+        // Asumiendo que plan.plan_serviceId es el ID del servicio de plan
       },
-      relations: ['nurse', 'plan_service'],
+      relations: ['nurse'],
     });
     console.log('nurseee', nurse);
     console.log('find date', findDate);
-    if (findDate.length && planServiceId === findDate[0].plan_serviceId) {
+    if (findDate.length ) {
       console.log('tiene mas de una fecha ')
       throw new ConflictException('Ya tiene una cita agendada para esta fecha');
     }

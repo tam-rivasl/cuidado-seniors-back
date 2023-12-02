@@ -169,12 +169,21 @@ export class UserService {
   }
 
   public async findAll(paginationQueryDto: PaginationQueryDto<User>) {
-    const { limit, offset } = paginationQueryDto;
-    const findAllUser = await this.userRepository.find({
+    const { limit, offset, name, email } = paginationQueryDto;
+    
+    const findOptions: any = {
       take: limit,
       skip: offset,
       relations: ['rol'],
-    });
+    };
+    
+    if(name || email){
+      findOptions.where = [
+        { firstName:  name},
+        { email: email },
+      ]; 
+    }
+    const findAllUser = await this.userRepository.find(findOptions);
     if (!findAllUser) {
       throw new NotFoundException('Not users to find');
     } else {

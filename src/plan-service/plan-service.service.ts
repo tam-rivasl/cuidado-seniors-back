@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreatePlanServiceDto } from './dto/create-plan-service.dto';
-import { UpdatePlanServiceDto } from './dto/update-plan-service.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PlanService, status } from './entities/planService.entity';
 import { Repository } from 'typeorm';
@@ -17,6 +16,7 @@ export class PlanServiceService {
     private readonly planserviceRepository: Repository<PlanService>,
   ) {}
   public async create(createPlanServiceDto: CreatePlanServiceDto) {
+   
     const plan: CreatePlanServiceDto = {
       planServiceName: createPlanServiceDto.planServiceName,
       price: createPlanServiceDto.price,
@@ -30,7 +30,8 @@ export class PlanServiceService {
       const result = await this.planserviceRepository.save(plan);
       return result;
     } catch (e) {
-      throw new ConflictException('error to create plan service', e.message);
+      console.log("error", e, "mensaje?", e.message)
+      throw new ConflictException('error al crear servicio consulte con soporte', e.message);
     }
   }
 
@@ -43,7 +44,7 @@ export class PlanServiceService {
       });
       return plan;
     } catch (e) {
-      throw new NotFoundException('Plan service not found', e.message);
+      throw new NotFoundException('Plan service no encontrado', e.message);
     }
   }
 
@@ -52,7 +53,7 @@ export class PlanServiceService {
       where: { plan_serviceId: planserviceId },
     });
     if (!plan) {
-      throw new NotFoundException('Plan service not found');
+      throw new NotFoundException('Plan service no encontrado');
     }
     return plan;
   }
