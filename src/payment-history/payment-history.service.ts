@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreatePaymentHistoryDto } from './dto/create-payment-history.dto';
 import { UpdatePaymentHistoryDto } from './dto/update-payment-history.dto';
 
+//debido a que no se realizo la integracon con pagos no se realizo
+//atte. tamara Rivas
 @Injectable()
 export class PaymentHistoryService {
   create(createPaymentHistoryDto: CreatePaymentHistoryDto) {
