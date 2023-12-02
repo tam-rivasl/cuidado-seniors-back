@@ -10,7 +10,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { Not, Repository } from 'typeorm';
+import {  Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { PaginationQueryDto } from 'src/common/paginationQueryDto';
@@ -57,7 +57,7 @@ export class UserService {
     });
     if (result) {
       throw new HttpException(
-        `User identificationNumber exists ${identificationNumber}`,
+        `Rut ya se encuentra registrado:  ${identificationNumber}`,
         HttpStatus.BAD_REQUEST,
       );
     } else {
@@ -137,22 +137,22 @@ export class UserService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Usuario no encontrado');
     }
 
     console.log('contrasena encriptada', user.password);
     if (!user.password) {
-      throw new UnauthorizedException('Incorrect credencials');
+      throw new UnauthorizedException(`Contraseña incorrecta ${user.password}`);
     }
 
     if (!user.email) {
-      throw new UnauthorizedException('Incorrect credencials');
+      throw new UnauthorizedException(`Email incorrecto ${user.email}`);
     }
     // Compara la contraseña ingresada en el DTO (en texto claro) con la contraseña almacenada en la base de datos (encriptada)
     const isPasswordValid = await bcrypt.compare(password, user.password);
     console.log(isPasswordValid);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid password');
+      throw new UnauthorizedException('Contraseña incorrecta');
     }
 
     // Genera un token JWT para el usuario al iniciar sesión correctamente
@@ -185,7 +185,7 @@ export class UserService {
     }
     const findAllUser = await this.userRepository.find(findOptions);
     if (!findAllUser) {
-      throw new NotFoundException('Not users to find');
+      throw new NotFoundException('No se encuentran usuarios');
     } else {
       return findAllUser;
     }
